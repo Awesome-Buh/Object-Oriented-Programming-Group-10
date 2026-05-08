@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoFast • Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link ref="Stylesheet" href="Styles.Ticket.css"/>
+<style>
+
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="admin-header">
+    <div>
+      <h1>GoFast Admin</h1>
+      <p>Manage bookings, view passenger manifests, and download boarding lists.</p>
+    </div>
+    <button id="refreshBtn" class="btn">⟳ Refresh</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="statsPanel">
+    <div class="stat-card"><div class="stat-number" id="totalBookings">0</div><div>Total bookings</div></div>
+    <div class="stat-card"><div class="stat-number" id="totalRevenue">0</div><div>Revenue (CFA)</div></div>
+  </div>
+
+  <!-- Filter by bus / route + departure date -->
+  <div class="filter-card">
+    <h3 style="margin-bottom: 1rem;">Filter by Bus Trip</h3>
+    <div class="filter-group">
+      <div class="field">
+        <label>Route (Origin → Destination)</label>
+        <select id="filterRoute">
+          <option value="">All routes</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Departure date</label>
+        <input type="date" id="filterDate">
+      </div>
+      <div class="field">
+        <button id="applyFilterBtn" class="btn">Apply Filter</button>
+      </div>
+      <div class="field">
+        <button id="downloadManifestBtn" class="btn btn-outline">📎 Download Passenger List (CSV)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookings table -->
+  <div style="overflow-x: auto;">
+    <table id="bookingsTable">
+      <thead>
+        <tr><th>Ticket ID</th><th>Passenger</th><th>Route</th><th>Departure</th><th>Seat</th><th>Status</th></tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="6">Loading bookings...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer>Only confirmed (paid) bookings appear here. Use filters to generate boarding manifests.</footer>
+</div>
+
+<script src="Scripts/Ticket.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoFast • Login or Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap"
+        rel="stylesheet">
+        <link rel="stylesheet" href="Styles/Login.css"/>
+    
+</head>
+
+<body>
+    <nav>
+        <a href="gofast-landing.html" class="nav-logo">
+            <div class="logo-mark">GF</div><span class="logo-text">Go<span>Fast</span></span>
+        </a>
+        <div class="nav-cta"><a href="gofast-working.html" class="btn btn-outline">Working Page</a><a
+                href="gofast-login.html" class="btn btn-primary">Sign Up</a></div>
+    </nav>
+    <main>
+        <div class="container">
+            <div class="form-card">
+                <div class="form-header">
+                    <h1><em>GoFast</em> Access</h1>
+                    <p id="formSubtext">Log in to continue your journey</p>
+                </div>
+                <div id="signupNameGroup" class="input-group" style="display:none;"><label>Full name</label><input
+                        type="text" id="fullName" placeholder="e.g., Nadia Y."></div>
+                <div class="input-group"><label>Email address</label><input type="email" id="email"
+                        placeholder="you@example.com"></div>
+                <div class="input-group"><label>Password</label><input type="password" id="password"
+                        placeholder="••••••••"></div>
+                <button id="actionButton" class="btn btn-primary auth-btn">Log In</button>
+                <div id="errorBox" class="error-message"></div>
+                <div class="toggle-text"><span id="togglePrompt">Don't have an account?</span> <span id="toggleLink"
+                        class="toggle-link">Create one</span></div>
+            </div>
+            <div class="city-gallery">
+                <div class="gallery-grid">
+                    <div class="city-tile"><img src="Douala.png"
+                            alt="Douala">
+                        <div class="city-label">Douala</div>
+                    </div>
+                    <div class="city-tile"><img src="Yaounde.jpg"
+                            alt="Yaoundé">
+                        <div class="city-label">Yaoundé</div>
+                    </div>
+                    <div class="city-tile"><img src="Buea.jpg"
+                            alt="Buea">
+                        <div class="city-label">Buea</div>
+                    </div>
+                    <div class="city-tile"><img src="Limbe.jpg"
+                            alt="Limbe">
+                        <div class="city-label">Limbe</div>
+                    </div>
+                    <div class="city-tile"><img src="Bafoussam.jpg"
+                            alt="Bafoussam">
+                        <div class="city-label">Bafoussam</div>
+                    </div>
+                    <div class="city-tile"><img src="Bamenda.png"
+                            alt="Bamenda">
+                        <div class="city-label">Bamenda</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>© 2025 GoFast Technologies Ltd — Tickets at your fingertips 🇨🇲</footer>
+    <script src="Scripts/Login.js"></script>
+</body>
+
+</html>

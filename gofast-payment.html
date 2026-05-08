@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>GoFast • Complete Payment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="Stylesheet" href="Styles/Payment.css"/>
+
+</head>
+<body>
+
+<nav>
+  <a href="gofast-landing.html" class="nav-logo">
+    <div class="logo-mark">GF</div>
+    <span class="logo-text">Go<span>Fast</span></span>
+  </a>
+  <div class="user-welcome" id="userWelcome">Loading...</div>
+  <div>
+    <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn">Logout</a>
+    <a href="gofast-working.html" class="btn btn-outline">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="payment-card">
+    <h1>Secure <em>Payment</em></h1>
+    <p style="color: var(--muted); margin-bottom: 1rem;">Review your trip and complete payment to confirm your seat.</p>
+
+    <div id="summaryContent"></div>
+
+    <div class="payment-methods">
+      <div class="method-title">Select payment method</div>
+      <div id="methodMtn" class="method-option" data-method="mtn">
+        <div class="method-icon mtn-icon">📱</div>
+        <div>
+          <div class="method-name">MTN Mobile Money</div>
+          <div class="method-desc">Pay with your MTN MoMo account</div>
+        </div>
+      </div>
+      <div id="methodOrange" class="method-option" data-method="orange">
+        <div class="method-icon orange-icon">📲</div>
+        <div>
+          <div class="method-name">Orange Money</div>
+          <div class="method-desc">Pay with Orange Money</div>
+        </div>
+      </div>
+
+      <div id="mtnPhone" class="phone-input">
+        <label style="font-size:0.8rem;">MTN MoMo number</label>
+        <input type="tel" id="mtnNumber" placeholder="6XXXXXXXX">
+      </div>
+      <div id="orangePhone" class="phone-input">
+        <label style="font-size:0.8rem;">Orange Money number</label>
+        <input type="tel" id="orangeNumber" placeholder="6XXXXXXXX">
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button id="cancelBtn" class="btn btn-outline">Cancel</button>
+      <button id="payBtn" class="btn btn-primary">Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2025 GoFast Technologies — Secure payment powered by mobile money.
+</footer>
+
+<script src="Scripts/Payment.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoFast • Book Your Ticket</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="Stylesheet" href="Styles/Booking.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="gofast-landing.html" class="nav-logo"
+        ><div class="logo-mark">GF</div>
+        <span class="logo-text">Go<span>Fast</span></span></a
+      >
+      <div class="user-welcome" id="userWelcome">Loading...</div>
+      <div>
+        <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn"
+          >Logout</a
+        ><a href="gofast-working.html" class="btn btn-outline">Dashboard</a>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="booking-card">
+        <h1>Book your <em>ticket</em></h1>
+        <p style="color: var(--muted); margin-bottom: 2rem">
+          Step 1: Choose route & date → Step 2: Select a bus → Step 3: Pick your
+          seat
+        </p>
+        <form id="bookingForm">
+          <div class="row-2col">
+            <div class="form-group">
+              <label>Full name *</label
+              ><input type="text" id="fullName" required />
+            </div>
+            <div class="form-group">
+              <label>Phone *</label
+              ><input type="tel" id="phone" placeholder="6XXXXXXXX" required />
+            </div>
+          </div>
+          <div class="row-2col">
+            <div class="form-group">
+              <label>From *</label
+              ><select id="origin" required>
+                <option value="">Select city</option>
+                <option>Douala</option>
+                <option>Yaoundé</option>
+                <option>Bafoussam</option>
+                <option>Bamenda</option>
+                <option>Buea</option>
+                <option>Limbe</option>
+                <option>Kribi</option>
+                <option>Garoua</option>
+                <option>Ngaoundéré</option>
+                <option>Maroua</option>
+                <option>Bertoua</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>To *</label
+              ><select id="destination" required>
+                <option value="">Select city</option>
+                <option>Douala</option>
+                <option>Yaoundé</option>
+                <option>Bafoussam</option>
+                <option>Bamenda</option>
+                <option>Buea</option>
+                <option>Limbe</option>
+                <option>Kribi</option>
+                <option>Garoua</option>
+                <option>Ngaoundéré</option>
+                <option>Maroua</option>
+                <option>Bertoua</option>
+              </select>
+            </div>
+          </div>
+          <div class="row-2col">
+            <div class="form-group">
+              <label>Departure date *</label
+              ><input type="date" id="departureDate" required />
+            </div>
+            <div class="form-group">
+              <label>Departure time *</label
+              ><select id="departureTime" required>
+                <option value="">Select time</option>
+                <option>06:00</option>
+                <option>09:30</option>
+                <option>13:00</option>
+                <option>16:30</option>
+                <option>20:00</option>
+              </select>
+            </div>
+          </div>
+          <!-- NEW: Bus selection dropdown -->
+          <div class="form-group">
+            <label>Select a bus *</label
+            ><select id="busSelect" disabled required>
+              <option value="">First choose route & date</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select your seat *</label>
+            <div class="seat-layout" id="seatLayout">
+              <div class="bus-front">FRONT OF BUS</div>
+              <div id="seatRowsContainer"></div>
+              <div class="bus-front">BACK OF BUS</div>
+            </div>
+          </div>
+          <div class="price-summary" id="priceSummary">Total: -- CFA</div>
+          <div class="action-buttons">
+            <button type="button" id="saveDraftBtn" class="btn btn-outline">
+              Save for later</button
+            ><button type="submit" id="continueBtn" class="btn btn-primary">
+              Continue to Review →
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <footer>© 2025 GoFast Technologies — Choose your bus and seat</footer>
+
+    <script src="Scripts/Booking.js"></script>
+  </body>
+</html>

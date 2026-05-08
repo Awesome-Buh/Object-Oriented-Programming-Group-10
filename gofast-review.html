@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>GoFast • Review Your Booking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="Stylesheet" href="Styles/Review.css"/>
+
+</head>
+<body>
+
+<nav>
+  <a href="gofast-landing.html" class="nav-logo">
+    <div class="logo-mark">GF</div>
+    <span class="logo-text">Go<span>Fast</span></span>
+  </a>
+  <div class="user-welcome" id="userWelcome">Loading...</div>
+  <div>
+    <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn">Logout</a>
+    <a href="gofast-working.html" class="btn btn-outline">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="review-card">
+    <h1>Review your <em>trip</em></h1>
+    <p style="color: var(--muted); margin-bottom: 1rem;">Please check that all details are correct before proceeding to payment.</p>
+
+    <div id="reviewContent">
+      <!-- dynamic content from localStorage -->
+    </div>
+
+    <div class="action-buttons">
+      <button id="editBtn" class="btn btn-outline">✏️ Edit Booking</button>
+      <button id="confirmBtn" class="btn btn-primary">✅ Confirm & Proceed to Payment</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2025 GoFast Technologies — Your journey, confirmed.
+</footer>
+
+<script src="Scripts/Review.js"></script>
+</body>
+</html>
