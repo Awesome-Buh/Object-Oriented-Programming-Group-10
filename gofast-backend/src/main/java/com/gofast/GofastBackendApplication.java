@@ -1,4 +1,4 @@
-package GoFast.Backend;
+package com.gofast;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
