@@ -1,215 +1,498 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=yes"
-    />
-    <title>GoFast • Your Travel Hub</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="Styles/Working.css" />
-  </head>
-  <body>
-    <nav>
-      <a href="gofast-landing.html" class="nav-logo">
-        <div class="logo-mark">GF</div>
-        <span class="logo-text">Go<span>Fast</span></span>
-      </a>
-      <div class="user-welcome" id="userWelcome">Loading...</div>
-      <div>
-        <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn"
-          >Logout</a
-        >
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>GoFast • Your Travel Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black:   #0a0a0b;
+    --ink:     #13131a;
+    --panel:   #1a1a24;
+    --card:    #21212f;
+    --border:  rgba(255,255,255,0.08);
+    --orange:  #ff5c1a;
+    --amber:   #ffb830;
+    --white:   #f5f4f0;
+    --muted:   rgba(245,244,240,0.55);
+    --speed:   0.35s;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    padding-bottom: 5rem;
+  }
+
+  /* Navigation */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 5%;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: #fff;
+    box-shadow: 0 0 18px rgba(255,92,26,0.45);
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--orange); }
+  .user-welcome {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .user-welcome strong { color: var(--orange); }
+
+  .btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--speed);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-primary {
+    background: var(--orange);
+    border: 1px solid var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255,92,26,0.3);
+  }
+  .btn-primary:hover {
+    background: #ff7040;
+    transform: translateY(-1px);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-outline:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* Main container */
+  .container {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 5%;
+  }
+
+  /* Section headers */
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .section-title em { font-style: normal; color: var(--orange); }
+
+  /* Grids */
+  .features-grid, .benefits-grid, .routes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .feature-card, .benefit-card, .route-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: transform var(--speed);
+  }
+  .feature-card:hover, .benefit-card:hover, .route-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,92,26,0.3);
+  }
+  .feature-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+  .feature-card h3, .benefit-card h3, .route-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+  .feature-card p, .benefit-card p, .route-card p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* Departure times table */
+  .schedule-table {
+    background: var(--panel);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border);
+  }
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 0.8fr;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .schedule-header {
+    background: rgba(255,92,26,0.1);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  .route-badge {
+    background: var(--orange);
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: fit-content;
+  }
+
+  /* CTA Button */
+  .book-cta {
+    text-align: center;
+    margin: 3rem 0;
+  }
+  .btn-large {
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    border-radius: 60px;
+  }
+
+  /* Floating button (persistent) */
+  .floating-booking {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background: var(--orange);
+    color: white;
+    border-radius: 60px;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: none;
+    font-weight: 600;
+  }
+  .floating-booking:hover {
+    transform: scale(1.02);
+    background: #ff7040;
+  }
+  .cancel-booking {
+    background: rgba(0,0,0,0.5);
+    border-radius: 40px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+  }
+  .hidden {
+    display: none;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 700px) {
+    .schedule-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .schedule-header {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="gofast-landing.html" class="nav-logo">
+    <div class="logo-mark">GF</div>
+    <span class="logo-text">Go<span>Fast</span></span>
+  </a>
+  <div class="user-welcome" id="userWelcome">Loading...</div>
+  <div>
+    <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn">Logout</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <!-- 1. Activities summary -->
+    <div>
+      <p class="section-label">Your Dashboard</p>
+      <h2 class="section-title">What would you like to do <em>today?</em></h2>
+      <div class="features-grid">
+        <div class="feature-card" id="bookTicketCard">
+          <div style="font-size: 2.5rem;"></div>
+          <h3>Book a Ticket</h3>
+          <p>Reserve your seat instantly. Choose departure, seat, and pay with mobile money.</p>
+          <button class="btn btn-primary" style="margin-top: 1rem;" id="startBookingBtn">Book Now →</button>
+        </div>
+        <div class="feature-card">
+          <div style="font-size: 2.5rem;"></div>
+          <h3>Our Routes</h3>
+          <p>Explore all cities and towns we serve across Cameroon.</p>
+        </div>
+        <div class="feature-card">
+          <div style="font-size: 2.5rem;"></div>
+          <h3>Live Departures</h3>
+          <p>Check real-time bus schedules and seat availability.</p>
+        </div>
       </div>
-    </nav>
-
-    <main>
-      <div class="container">
-        <!-- 1. Activities summary -->
-        <div>
-          <p class="section-label">Your Dashboard</p>
-          <h2 class="section-title">
-            What would you like to do <em>today?</em>
-          </h2>
-          <div class="features-grid">
-            <div class="feature-card" id="bookTicketCard">
-              <div style="font-size: 2.5rem"></div>
-               <h3>Book a Ticket</h3>
-               <p>
-                Reserve your seat instantly. Choose departure, seat, and pay
-                with mobile money.
-               </p>
-               <button
-                class="btn btn-primary"
-                style="margin-top: 1rem"
-                id="startBookingBtn"
-               >
-                Book Now →
-              </button>
-            </div>
-            <div class="feature-card">
-              <div style="font-size: 2.5rem"></div>
-              <h3>Our Routes</h3>
-              <p>Explore all cities and towns we serve across Cameroon.</p>
-              <button
-                class="btn btn-primary"
-                style="margin-top: 1rem"
-                id="startBookingBtn"
-              >
-                View Routes →
-              </button>
-            </div>
-            <div class="feature-card">
-              <div style="font-size: 2.5rem"></div>
-              <h3>Live Departures</h3>
-              <p>Check real-time bus schedules and seat availability.</p>
-              <button
-                class="btn btn-primary"
-                style="margin-top: 1rem"
-                id="startBookingBtn"
-              >
-                Check Schedules →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Bus Features with pictures -->
-        <div style="margin-top: 3rem">
-          <p class="section-label">Our Fleet</p>
-          <h2 class="section-title">Travel in <em>Premium Comfort</em></h2>
-          <div class="features-grid">
-            <div class="feature-card">
-              <img
-                class="feature-img"
-                src="Modern bus.jpg"
-                alt="Modern bus"
-              />
-              <h3>Executive Coaches</h3>
-              <p>Air-conditioned, reclining seats, and extra legroom.</p>
-            </div>
-            <div class="feature-card">
-              <img
-                class="feature-img"
-                src="leather.webp"
-                alt="Luxury interior"
-              />
-              <h3>Leather Seats & WiFi</h3>
-              <p>Free high-speed internet and power outlets at every seat.</p>
-            </div>
-            <div class="feature-card">
-              <img
-                class="feature-img"
-                src="entertainment.jpg"
-                alt="Onboard entertainment"
-              />
-              <h3>Entertainment System</h3>
-              <p>Personal screens with movies and music.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Benefits of traveling with GoFast -->
-        <div style="margin-top: 3rem">
-          <p class="section-label">Why choose us</p>
-          <h2 class="section-title">Benefits you'll <em>love</em></h2>
-          <div class="benefits-grid">
-            <div class="benefit-card">
-              <div style="font-size: 2rem"></div>
-              <h3>Discounted Prices</h3>
-              <p>
-                Save up to 30% when you book early. Loyalty rewards and student
-                discounts.
-              </p>
-            </div>
-            <div class="benefit-card">
-              <div style="font-size: 2rem"></div>
-              <h3>Safety Guarantee</h3>
-              <p>
-                All buses insured and monitored 24/7. Your safety is our
-                priority.
-              </p>
-            </div>
-            <div class="benefit-card">
-              <div style="font-size: 2rem"></div>
-              <h3>On-Time Efficiency</h3>
-              <p>
-                98% on-time departure rate. Real-time alerts and easy
-                rescheduling.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Routes and Departure Times -->
-        <div style="margin-top: 3rem">
-          <p class="section-label">Schedules</p>
-          <h2 class="section-title">Popular <em>Routes & Departures</em></h2>
-          <div class="schedule-table">
-            <div class="schedule-row schedule-header">
-              <span>Route</span> <span>Departure Time</span>
-              <span>Duration</span> <span>Price (XAF)</span>
-            </div>
-            <div class="schedule-row">
-              <span><span class="route-badge">Douala → Yaoundé</span></span>
-              <span>06:00, 09:30, 13:00, 16:30</span>
-              <span>3h 30m</span>
-              <span>4,500</span>
-            </div>
-            <div class="schedule-row">
-              <span><span class="route-badge">Douala → Bafoussam</span></span>
-              <span>07:15, 11:45, 15:20</span>
-              <span>4h 15m</span>
-              <span>5,000</span>
-            </div>
-            <div class="schedule-row">
-              <span><span class="route-badge">Yaoundé → Bamenda</span></span>
-              <span>05:30, 10:00, 14:30</span>
-              <span>6h 00m</span>
-              <span>7,500</span>
-            </div>
-            <div class="schedule-row">
-              <span><span class="route-badge">Buea → Douala</span></span>
-              <span>08:00, 12:30, 17:00</span>
-              <span>2h 15m</span>
-              <span>3,500</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Big CTA button to book -->
-        <div class="book-cta">
-          <button class="btn btn-primary btn-large" id="bigBookBtn">
-            Book Your Ticket Now →
-          </button>
-        </div>
-      </div>
-    </main>
-
-    <!-- Persistent Floating Button for incomplete booking -->
-    <div id="floatingBookingBtn" class="floating-booking hidden">
-      <span>✈️ You have an incomplete booking</span>
-      <span
-        id="resumeBookingBtn"
-        style="
-          background: white;
-          color: black;
-          padding: 0.2rem 1rem;
-          border-radius: 40px;
-        "
-        >Resume</span
-      >
-      <span id="cancelBookingBtn" class="cancel-booking">Cancel</span>
     </div>
 
-    <footer>© 2025 GoFast Technologies — Smart travel, simplified.</footer>
+    <!-- 2. Bus Features with pictures -->
+    <div style="margin-top: 3rem;">
+      <p class="section-label">Our Fleet</p>
+      <h2 class="section-title">Travel in <em>Premium Comfort</em></h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <img class="feature-img" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&auto=format" alt="Modern bus">
+          <h3>Executive Coaches</h3>
+          <p>Air-conditioned, reclining seats, and extra legroom.</p>
+        </div>
+        <div class="feature-card">
+          <img class="feature-img" src="leather.webp" alt="Luxury interior">
+          <h3>Leather Seats & WiFi</h3>
+          <p>Free high-speed internet and power outlets at every seat.</p>
+        </div>
+        <div class="feature-card">
+          <img class="feature-img" src="entertainment.jpg" alt="Onboard entertainment">
+          <h3>Entertainment System</h3>
+          <p>Personal screens with movies and music.</p>
+        </div>
+      
+      </div>
+    </div>
 
-    <script src="Scripts/Working.js"></script>
-  </body>
+    <!-- 3. Benefits of traveling with GoFast -->
+    <div style="margin-top: 3rem;">
+      <p class="section-label">Why choose us</p>
+      <h2 class="section-title">Benefits you'll <em>love</em></h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div style="font-size: 2rem;"></div>
+          <h3>Discounted Prices</h3>
+          <p>Save up to 30% when you book early. Loyalty rewards and student discounts.</p>
+        </div>
+        <div class="benefit-card">
+          <div style="font-size: 2rem;"></div>
+          <h3>Safety Guarantee</h3>
+          <p>All buses insured and monitored 24/7. Your safety is our priority.</p>
+        </div>
+        <div class="benefit-card">
+          <div style="font-size: 2rem;"></div>
+          <h3>On-Time Efficiency</h3>
+          <p>98% on-time departure rate. Real-time alerts and easy rescheduling.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Routes and Departure Times -->
+    <div style="margin-top: 3rem;">
+      <p class="section-label">Schedules</p>
+      <h2 class="section-title">Popular <em>Routes & Departures</em></h2>
+      <div class="schedule-table">
+        <div class="schedule-row schedule-header">
+          <span>Route</span> <span>Departure Time</span> <span>Duration</span> <span>Price (XAF)</span>
+        </div>
+        <div class="schedule-row">
+          <span><span class="route-badge">Douala → Yaoundé</span></span>
+          <span>06:00, 09:30, 13:00, 16:30</span>
+          <span>3h 30m</span>
+          <span>4,500</span>
+        </div>
+        <div class="schedule-row">
+          <span><span class="route-badge">Douala → Bafoussam</span></span>
+          <span>07:15, 11:45, 15:20</span>
+          <span>4h 15m</span>
+          <span>5,000</span>
+        </div>
+        <div class="schedule-row">
+          <span><span class="route-badge">Yaoundé → Bamenda</span></span>
+          <span>05:30, 10:00, 14:30</span>
+          <span>6h 00m</span>
+          <span>7,500</span>
+        </div>
+        <div class="schedule-row">
+          <span><span class="route-badge">Buea → Douala</span></span>
+          <span>08:00, 12:30, 17:00</span>
+          <span>2h 15m</span>
+          <span>3,500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Big CTA button to book -->
+    <div class="book-cta">
+      <button class="btn btn-primary btn-large" id="bigBookBtn"> Book Your Ticket Now →</button>
+    </div>
+  </div>
+</main>
+
+<!-- Persistent Floating Button for incomplete booking -->
+<div id="floatingBookingBtn" class="floating-booking hidden">
+  <span>✈️ You have an incomplete booking</span>
+  <span id="resumeBookingBtn" style="background: white; color: black; padding: 0.2rem 1rem; border-radius: 40px;">Resume</span>
+  <span id="cancelBookingBtn" class="cancel-booking">Cancel</span>
+</div>
+
+<footer>
+  © 2025 GoFast Technologies — Smart travel, simplified.
+</footer>
+
+<script>
+  // ------------------- USER SESSION -------------------
+  let currentUser = null;
+  const storedUser = localStorage.getItem('goFastUser');
+  if (storedUser) {
+    currentUser = JSON.parse(storedUser);
+    document.getElementById('userWelcome').innerHTML = ` Welcome, <strong>${currentUser.name || currentUser.email}</strong>`;
+  } else {
+    // Not logged in -> redirect to login page
+    window.location.href = 'gofast-login.html';
+  }
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('goFastUser');
+    // Optionally clear pending booking
+    localStorage.removeItem('pendingBooking');
+    window.location.href = 'gofast-login.html';
+  });
+
+  // ------------------- PERSISTENT BOOKING STATE -------------------
+  let pendingBooking = localStorage.getItem('pendingBooking');
+  const floatingBtn = document.getElementById('floatingBookingBtn');
+  const resumeBtn = document.getElementById('resumeBookingBtn');
+  const cancelBtn = document.getElementById('cancelBookingBtn');
+
+  function updateFloatingButton() {
+    if (pendingBooking) {
+      floatingBtn.classList.remove('hidden');
+    } else {
+      floatingBtn.classList.add('hidden');
+    }
+  }
+
+  // Cancel pending booking
+  function cancelPendingBooking() {
+    localStorage.removeItem('pendingBooking');
+    pendingBooking = null;
+    updateFloatingButton();
+    alert('Incomplete booking has been cancelled.');
+  }
+
+  // Resume booking: redirect to payment page with the stored data?
+  // For now we redirect to the booking page (step 4) with the stored draft.
+  function resumeBooking() {
+    if (pendingBooking) {
+      // Stored data contains booking draft. We'll redirect to the booking page.
+      // But the booking page expects to load draft. We'll store a flag.
+      window.location.href = 'gofast-booking.html?resume=true';
+    } else {
+      cancelPendingBooking();
+    }
+  }
+
+  cancelBtn.addEventListener('click', cancelPendingBooking);
+  resumeBtn.addEventListener('click', resumeBooking);
+  updateFloatingButton();
+
+  // ------------------- NAVIGATION TO BOOKING PAGE -------------------
+  // The booking page (to be built) will collect passenger info, seat selection, etc.
+  // We'll set a session flag to indicate new booking.
+  function initiateBooking() {
+    // Clear any existing incomplete booking (or you can ask to resume)
+    if (pendingBooking) {
+      if (confirm('You have an incomplete booking. Do you want to resume it?')) {
+        resumeBooking();
+      } else {
+        cancelPendingBooking();
+        startFreshBooking();
+      }
+    } else {
+      startFreshBooking();
+    }
+  }
+
+  function startFreshBooking() {
+    // We'll simply redirect to the booking page, which will initialize fresh.
+    // To differentiate, we can remove any pendingBooking.
+    localStorage.removeItem('pendingBooking');
+    window.location.href = 'gofast-booking.html';
+  }
+
+  document.getElementById('startBookingBtn').addEventListener('click', initiateBooking);
+  document.getElementById('bigBookBtn').addEventListener('click', initiateBooking);
+
+  // For demonstration, if there's a pending booking, we show the button.
+  // The actual booking page will save/load from localStorage.
+</script>
+</body>
 </html>

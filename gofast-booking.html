@@ -1,127 +1,261 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GoFast • Book Your Ticket</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="Stylesheet" href="Styles/Booking.css" />
-  </head>
-  <body>
-    <nav>
-      <a href="gofast-landing.html" class="nav-logo"
-        ><div class="logo-mark">GF</div>
-        <span class="logo-text">Go<span>Fast</span></span></a
-      >
-      <div class="user-welcome" id="userWelcome">Loading...</div>
-      <div>
-        <a href="gofast-login.html" class="btn btn-outline" id="logoutBtn"
-          >Logout</a
-        ><a href="gofast-working.html" class="btn btn-outline">Dashboard</a>
-      </div>
-    </nav>
-    <div class="container">
-      <div class="booking-card">
-        <h1>Book your <em>ticket</em></h1>
-        <p style="color: var(--muted); margin-bottom: 2rem">
-          Step 1: Choose route & date → Step 2: Select a bus → Step 3: Pick your
-          seat
-        </p>
-        <form id="bookingForm">
-          <div class="row-2col">
-            <div class="form-group">
-              <label>Full name *</label
-              ><input type="text" id="fullName" required />
-            </div>
-            <div class="form-group">
-              <label>Phone *</label
-              ><input type="tel" id="phone" placeholder="6XXXXXXXX" required />
-            </div>
-          </div>
-          <div class="row-2col">
-            <div class="form-group">
-              <label>From *</label
-              ><select id="origin" required>
-                <option value="">Select city</option>
-                <option>Douala</option>
-                <option>Yaoundé</option>
-                <option>Bafoussam</option>
-                <option>Bamenda</option>
-                <option>Buea</option>
-                <option>Limbe</option>
-                <option>Kribi</option>
-                <option>Garoua</option>
-                <option>Ngaoundéré</option>
-                <option>Maroua</option>
-                <option>Bertoua</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>To *</label
-              ><select id="destination" required>
-                <option value="">Select city</option>
-                <option>Douala</option>
-                <option>Yaoundé</option>
-                <option>Bafoussam</option>
-                <option>Bamenda</option>
-                <option>Buea</option>
-                <option>Limbe</option>
-                <option>Kribi</option>
-                <option>Garoua</option>
-                <option>Ngaoundéré</option>
-                <option>Maroua</option>
-                <option>Bertoua</option>
-              </select>
-            </div>
-          </div>
-          <div class="row-2col">
-            <div class="form-group">
-              <label>Departure date *</label
-              ><input type="date" id="departureDate" required />
-            </div>
-            <div class="form-group">
-              <label>Departure time *</label
-              ><select id="departureTime" required>
-                <option value="">Select time</option>
-                <option>06:00</option>
-                <option>09:30</option>
-                <option>13:00</option>
-                <option>16:30</option>
-                <option>20:00</option>
-              </select>
-            </div>
-          </div>
-          <!-- NEW: Bus selection dropdown -->
-          <div class="form-group">
-            <label>Select a bus *</label
-            ><select id="busSelect" disabled required>
-              <option value="">First choose route & date</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Select your seat *</label>
-            <div class="seat-layout" id="seatLayout">
-              <div class="bus-front">FRONT OF BUS</div>
-              <div id="seatRowsContainer"></div>
-              <div class="bus-front">BACK OF BUS</div>
-            </div>
-          </div>
-          <div class="price-summary" id="priceSummary">Total: -- CFA</div>
-          <div class="action-buttons">
-            <button type="button" id="saveDraftBtn" class="btn btn-outline">
-              Save for later</button
-            ><button type="submit" id="continueBtn" class="btn btn-primary">
-              Continue to Review →
-            </button>
-          </div>
-        </form>
-      </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoFast • Book Your Ticket</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #0a0a0b; --panel: #1a1a24; --card: #21212f;
+    --border: rgba(255,255,255,0.08); --orange: #ff5c1a;
+    --white: #f5f4f0; --muted: rgba(245,244,240,0.55);
+  }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; }
+  nav {
+    position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 5%; background: rgba(10,10,11,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+  .logo-mark { width: 36px; height: 36px; border-radius: 8px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #fff; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.08em; color: var(--white); }
+  .logo-text span { color: var(--orange); }
+  .btn { padding: 0.6rem 1.4rem; border-radius: 6px; font-weight: 500; font-size: 0.88rem; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .btn-primary { background: var(--orange); border: 1px solid var(--orange); color: #fff; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--white); }
+  .container { max-width: 800px; margin: 2rem auto; padding: 0 5%; }
+  .booking-card { background: var(--panel); border: 1px solid var(--border); border-radius: 28px; padding: 2rem; }
+  h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; text-transform: uppercase; }
+  h1 em { font-style: normal; color: var(--orange); }
+  .form-group { margin-bottom: 1.5rem; }
+  label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.3rem; }
+  input, select { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1rem; color: white; font-family: 'DM Sans', sans-serif; }
+  .row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .seat-layout { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 1rem; border: 1px solid var(--border); }
+  .bus-front { text-align: center; margin-bottom: 1rem; font-size: 0.7rem; text-transform: uppercase; color: var(--muted); }
+  .bus-front::before { content: "⬆️ DRIVER"; display: block; background: var(--card); width: fit-content; margin: 0 auto; padding: 0.2rem 1rem; border-radius: 20px; }
+  .seat-row { display: grid; grid-template-columns: 1fr 0.2fr 1fr; gap: 0.5rem; margin-bottom: 0.6rem; align-items: center; }
+  .seat-group { display: flex; gap: 0.5rem; justify-content: space-around; }
+  .seat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.6rem; text-align: center; cursor: pointer; transition: all 0.2s; flex: 1; }
+  .seat:hover { border-color: var(--orange); background: rgba(255,92,26,0.2); }
+  .seat.selected { background: var(--orange); color: black; font-weight: bold; }
+  .aisle-marker { text-align: center; color: var(--muted); font-size: 0.7rem; }
+  .price-summary { background: rgba(255,92,26,0.1); border-radius: 16px; padding: 1rem; margin-top: 1.5rem; text-align: center; font-weight: 600; font-size: 1.2rem; }
+  .action-buttons { display: flex; gap: 1rem; justify-content: space-between; margin-top: 2rem; }
+  footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); margin-top: 3rem; color: var(--muted); font-size: 0.75rem; }
+  .disabled-seat { opacity: 0.5; pointer-events: none; }
+  @media (max-width:600px){ .row-2col { grid-template-columns:1fr; } .seat-row { grid-template-columns:1fr 0.1fr 1fr; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="gofast-landing.html" class="nav-logo"><div class="logo-mark">GF</div><span class="logo-text">Go<span>Fast</span></span></a>
+  <div class="user-welcome" id="userWelcome">Loading...</div>
+  <div><a href="gofast-login.html" class="btn btn-outline" id="logoutBtn">Logout</a><a href="gofast-working.html" class="btn btn-outline">Dashboard</a></div>
+</nav>
+<div class="container"><div class="booking-card">
+  <h1>Book your <em>ticket</em></h1>
+  <p style="color: var(--muted); margin-bottom: 2rem;">Step 1: Choose route & date → Step 2: Select a bus → Step 3: Pick your seat</p>
+  <form id="bookingForm">
+    <div class="row-2col">
+      <div class="form-group"><label>Full name *</label><input type="text" id="fullName" required></div>
+      <div class="form-group"><label>Phone *</label><input type="tel" id="phone" placeholder="6XXXXXXXX" required></div>
     </div>
-    <footer>© 2025 GoFast Technologies — Choose your bus and seat</footer>
+    <div class="row-2col">
+      <div class="form-group"><label>From *</label><select id="origin" required><option value="">Select city</option><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option><option>Bamenda</option><option>Buea</option><option>Limbe</option><option>Kribi</option><option>Garoua</option><option>Ngaoundéré</option><option>Maroua</option><option>Bertoua</option></select></div>
+      <div class="form-group"><label>To *</label><select id="destination" required><option value="">Select city</option><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option><option>Bamenda</option><option>Buea</option><option>Limbe</option><option>Kribi</option><option>Garoua</option><option>Ngaoundéré</option><option>Maroua</option><option>Bertoua</option></select></div>
+    </div>
+    <div class="row-2col">
+      <div class="form-group"><label>Departure date *</label><input type="date" id="departureDate" required></div>
+      <div class="form-group"><label>Departure time *</label><select id="departureTime" required><option value="">Select time</option><option>06:00</option><option>09:30</option><option>13:00</option><option>16:30</option><option>20:00</option></select></div>
+    </div>
+    <!-- NEW: Bus selection dropdown -->
+    <div class="form-group"><label>Select a bus *</label><select id="busSelect" disabled required><option value="">First choose route & date</option></select></div>
+    <div class="form-group"><label>Select your seat *</label>
+      <div class="seat-layout" id="seatLayout"><div class="bus-front">FRONT OF BUS</div><div id="seatRowsContainer"></div><div class="bus-front">BACK OF BUS</div></div>
+    </div>
+    <div class="price-summary" id="priceSummary">Total: -- CFA</div>
+    <div class="action-buttons"><button type="button" id="saveDraftBtn" class="btn btn-outline">Save for later</button><button type="submit" id="continueBtn" class="btn btn-primary">Continue to Review →</button></div>
+  </form>
+</div></div>
+<footer>© 2025 GoFast Technologies — Choose your bus and seat</footer>
 
-    <script src="Scripts/Booking.js"></script>
-  </body>
+<script>
+  // Session & logout same as before
+  const storedUser = localStorage.getItem('goFastUser');
+  if (!storedUser) window.location.href = 'gofast-login.html';
+  const currentUser = JSON.parse(storedUser);
+  document.getElementById('userWelcome').innerHTML = `👋 Welcome, <strong>${currentUser.name || currentUser.email}</strong>`;
+  document.getElementById('logoutBtn').addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('goFastUser'); window.location.href = 'gofast-login.html'; });
+
+  // DOM elements
+  const originSelect = document.getElementById('origin');
+  const destSelect = document.getElementById('destination');
+  const dateInput = document.getElementById('departureDate');
+  const timeSelect = document.getElementById('departureTime');
+  const busSelect = document.getElementById('busSelect');
+  let selectedSeat = null;
+
+  // Dynamic bus options based on route/date/time (mock)
+  function updateBusOptions() {
+    const origin = originSelect.value;
+    const dest = destSelect.value;
+    const date = dateInput.value;
+    const time = timeSelect.value;
+    if (!origin || !dest || !date || !time) {
+      busSelect.disabled = true;
+      busSelect.innerHTML = '<option value="">First choose route, date & time</option>';
+      return;
+    }
+    // Mock bus availability (in real app would fetch from server)
+    const busOptions = [
+      { id: 'BUS101', name: 'Bus 101 - Executive', capacity: 16 },
+      { id: 'BUS102', name: 'Bus 102 - Standard AC', capacity: 16 },
+      { id: 'BUS103', name: 'Bus 103 - Luxury', capacity: 16 }
+    ];
+    busSelect.disabled = false;
+    busSelect.innerHTML = '<option value="">-- Select a bus --</option>';
+    busOptions.forEach(bus => {
+      const option = document.createElement('option');
+      option.value = bus.id;
+      option.textContent = `${bus.name} (${bus.capacity} seats)`;
+      busSelect.appendChild(option);
+    });
+    // Reset seat selection when bus changes
+    busSelect.value = '';
+    selectedSeat = null;
+    generateSeats();
+  }
+
+  originSelect.addEventListener('change', updateBusOptions);
+  destSelect.addEventListener('change', updateBusOptions);
+  dateInput.addEventListener('change', updateBusOptions);
+  timeSelect.addEventListener('change', updateBusOptions);
+
+  // Seat generation (same layout for all buses)
+  function generateSeats() {
+    const container = document.getElementById('seatRowsContainer');
+    container.innerHTML = '';
+    const rows = 4;
+    let seatNum = 1;
+    for (let row = 0; row < rows; row++) {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'seat-row';
+      const leftGroup = document.createElement('div'); leftGroup.className = 'seat-group';
+      for (let i = 0; i < 2; i++) leftGroup.appendChild(createSeatElement(seatNum++));
+      const aisle = document.createElement('div'); aisle.className = 'aisle-marker'; aisle.textContent = '🟫';
+      const rightGroup = document.createElement('div'); rightGroup.className = 'seat-group';
+      for (let i = 0; i < 2; i++) rightGroup.appendChild(createSeatElement(seatNum++));
+      rowDiv.appendChild(leftGroup); rowDiv.appendChild(aisle); rowDiv.appendChild(rightGroup);
+      container.appendChild(rowDiv);
+    }
+    // Disable seat selection until bus selected
+    const seats = document.querySelectorAll('.seat');
+    if (!busSelect.value || busSelect.disabled) {
+      seats.forEach(s => s.style.pointerEvents = 'none');
+    } else {
+      seats.forEach(s => s.style.pointerEvents = 'auto');
+    }
+  }
+
+  function createSeatElement(seatNumber) {
+    const seatDiv = document.createElement('div');
+    seatDiv.className = 'seat';
+    seatDiv.textContent = seatNumber;
+    seatDiv.dataset.seat = seatNumber;
+    seatDiv.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!busSelect.value) { alert('Please select a bus first.'); return; }
+      if (selectedSeat) document.querySelector(`.seat[data-seat='${selectedSeat}']`).classList.remove('selected');
+      selectedSeat = seatNumber;
+      seatDiv.classList.add('selected');
+    });
+    return seatDiv;
+  }
+
+  // Price matrix (same as before)
+  const priceMatrix = { "Douala→Yaoundé":4500, "Yaoundé→Douala":4500, "Douala→Bafoussam":5500, "Bafoussam→Douala":5500, "Douala→Bamenda":7000, "Bamenda→Douala":7000, "Douala→Buea":3500, "Buea→Douala":3500, "Douala→Limbe":3500, "Limbe→Douala":3500, "Douala→Kribi":4000, "Kribi→Douala":4000, "Douala→Garoua":12000, "Garoua→Douala":12000, "Yaoundé→Bafoussam":5000, "Bafoussam→Yaoundé":5000, "Yaoundé→Bamenda":7500, "Bamenda→Yaoundé":7500, "Yaoundé→Buea":6000, "Buea→Yaoundé":6000, "Yaoundé→Limbe":6500, "Limbe→Yaoundé":6500, "Yaoundé→Garoua":11500, "Garoua→Yaoundé":11500, "Bafoussam→Bamenda":2500, "Bamenda→Bafoussam":2500, "Buea→Limbe":2000, "Limbe→Buea":2000, "Buea→Kribi":5000, "Kribi→Buea":5000, "Garoua→Ngaoundéré":4000, "Ngaoundéré→Garoua":4000 };
+  function getRoutePrice(origin, dest) { if(!origin||!dest) return null; if(origin===dest) return 0; const key = `${origin}→${dest}`; return priceMatrix[key] || priceMatrix[`${dest}→${origin}`] || 6500; }
+  function updatePriceDisplay() {
+    const price = getRoutePrice(originSelect.value, destSelect.value);
+    const span = document.getElementById('priceSummary');
+    if (price && originSelect.value && destSelect.value && originSelect.value!==destSelect.value) span.innerHTML = `💰 Total: ${price.toLocaleString()} CFA`;
+    else if (originSelect.value && destSelect.value && originSelect.value===destSelect.value) span.innerHTML = `⚠️ Origin and destination cannot be the same`;
+    else span.innerHTML = `💰 Total: -- CFA (select origin & destination)`;
+  }
+  originSelect.addEventListener('change', updatePriceDisplay);
+  destSelect.addEventListener('change', updatePriceDisplay);
+  updatePriceDisplay();
+
+  function getFormData() {
+    return {
+      fullName: document.getElementById('fullName').value,
+      phone: document.getElementById('phone').value,
+      origin: originSelect.value,
+      destination: destSelect.value,
+      departureDate: dateInput.value,
+      departureTime: timeSelect.value,
+      selectedBus: busSelect.value,
+      selectedSeat: selectedSeat,
+      price: getRoutePrice(originSelect.value, destSelect.value),
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  function saveDraft() {
+    const data = getFormData();
+    if (!data.origin || !data.destination || !data.departureDate || !data.departureTime || !data.selectedBus) {
+      alert('Please fill route, date, time, and select a bus before saving draft.');
+      return;
+    }
+    localStorage.setItem('pendingBooking', JSON.stringify(data));
+    alert('Booking draft saved!');
+  }
+  document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+
+  document.getElementById('bookingForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = getFormData();
+    if (!data.fullName || !data.phone || !data.origin || !data.destination || !data.departureDate || !data.departureTime || !data.selectedBus || !data.selectedSeat) {
+      alert('Please fill all fields, select a bus, and choose a seat.');
+      return;
+    }
+    if (data.origin === data.destination) { alert('Origin and destination cannot be the same.'); return; }
+    if (!data.price) { alert('Invalid route.'); return; }
+    localStorage.setItem('pendingBooking', JSON.stringify(data));
+    window.location.href = 'gofast-review.html';
+  });
+
+  // Resume draft
+  const existing = localStorage.getItem('pendingBooking');
+  if (existing && window.location.search.includes('resume=true')) {
+    try {
+      const draft = JSON.parse(existing);
+      document.getElementById('fullName').value = draft.fullName || '';
+      document.getElementById('phone').value = draft.phone || '';
+      originSelect.value = draft.origin || '';
+      destSelect.value = draft.destination || '';
+      dateInput.value = draft.departureDate || '';
+      timeSelect.value = draft.departureTime || '';
+      updateBusOptions(); // this will enable bus dropdown
+      setTimeout(() => {
+        if (draft.selectedBus) {
+          busSelect.value = draft.selectedBus;
+          generateSeats();
+          if (draft.selectedSeat) {
+            selectedSeat = draft.selectedSeat;
+            const seatElem = document.querySelector(`.seat[data-seat='${selectedSeat}']`);
+            if (seatElem) seatElem.classList.add('selected');
+          }
+        }
+        updatePriceDisplay();
+      }, 100);
+    } catch(e) { console.warn(e); }
+  } else {
+    generateSeats();
+  }
+  document.getElementById('departureDate').setAttribute('min', new Date().toISOString().split('T')[0]);
+</script>
+</body>
 </html>

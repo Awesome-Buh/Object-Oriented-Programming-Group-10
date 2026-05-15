@@ -5,7 +5,178 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GoFast • Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="Stylesheet" href="Styles/Admin.css"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0b;
+    --panel: #1a1a24;
+    --orange: #ff5c1a;
+    --white: #f5f4f0;
+    --muted: rgba(245,244,240,0.55);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    padding: 2rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    color: var(--orange);
+  }
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .filter-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .filter-group .field {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  select, input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    color: white;
+    font-family: inherit;
+  }
+
+  .btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--orange);
+    color: white;
+    transition: all 0.2s;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--orange);
+  }
+
+  table {
+    width: 100%;
+    background: var(--panel);
+    border-radius: 20px;
+    overflow: hidden;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    background: rgba(255,92,26,0.1);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-paid {
+    background: #2ecc71;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    display: inline-block;
+  }
+
+  .stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    flex: 1;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+
+  .manifest-note {
+    margin: 1rem 0 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  footer {
+    margin-top: 3rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 1rem; }
+    .filter-group { flex-direction: column; }
+    .filter-group .field { width: 100%; }
+    th, td { padding: 0.6rem; }
+  }
+</style>
 </head>
 <body>
 <div class="container">
@@ -65,6 +236,144 @@
   </footer>
 </div>
 
-<script src="Scripts/Admin.js"></script>
+<script>
+  // ------------------- Admin authentication (simple) -------------------
+  if (!localStorage.getItem('goFastAdminLoggedIn')) {
+    const pwd = prompt("🔐 Admin access required. Enter password:");
+    if (pwd === 'admin123') {
+      localStorage.setItem('goFastAdminLoggedIn', 'true');
+    } else {
+      alert("Unauthorized access. Redirecting to landing page.");
+      window.location.href = 'gofast-landing.html';
+    }
+  }
+
+  // ------------------- Helper: load all confirmed (paid) bookings -------------------
+  function loadPaidBookings() {
+    const all = JSON.parse(localStorage.getItem('goFastConfirmedBookings') || '[]');
+    return all.filter(b => b.status === 'paid');
+  }
+
+  // ------------------- Render stats -------------------
+  function renderStats(bookings) {
+    const total = bookings.length;
+    const revenue = bookings.reduce((sum, b) => sum + (b.price || 0), 0);
+    const uniqueRoutes = new Set(bookings.map(b => `${b.origin} → ${b.destination}`)).size;
+    document.getElementById('totalBookings').innerText = total;
+    document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
+    document.getElementById('uniqueRoutes').innerText = uniqueRoutes;
+  }
+
+  // ------------------- Populate route filter dropdown -------------------
+  function populateRouteFilter(bookings) {
+    const routesSet = new Set();
+    bookings.forEach(b => {
+      routesSet.add(`${b.origin} → ${b.destination}`);
+    });
+    const select = document.getElementById('filterRoute');
+    select.innerHTML = '<option value="">All routes</option>';
+    [...routesSet].sort().forEach(route => {
+      const option = document.createElement('option');
+      option.value = route;
+      option.textContent = route;
+      select.appendChild(option);
+    });
+  }
+
+  // ------------------- Apply filters and display table -------------------
+  let currentFilteredBookings = [];
+
+  function applyFilterAndRender() {
+    const allBookings = loadPaidBookings();
+    const routeFilter = document.getElementById('filterRoute').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    let filtered = allBookings;
+    if (routeFilter) {
+      filtered = filtered.filter(b => `${b.origin} → ${b.destination}` === routeFilter);
+    }
+    if (dateFilter) {
+      filtered = filtered.filter(b => b.departureDate === dateFilter);
+    }
+    currentFilteredBookings = filtered;
+    renderTable(filtered);
+    renderStats(allBookings); // stats always show total, not filtered
+    return filtered;
+  }
+
+  function renderTable(bookings) {
+    const tbody = document.getElementById('tableBody');
+    if (!bookings.length) {
+      tbody.innerHTML = '<tr><td colspan="7">No paid bookings match the current filter.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = '';
+    bookings.forEach(b => {
+      const row = tbody.insertRow();
+      row.insertCell(0).innerText = b.bookingId;
+      row.insertCell(1).innerText = b.fullName;
+      row.insertCell(2).innerText = b.phone;
+      row.insertCell(3).innerText = `${b.origin} → ${b.destination}`;
+      row.insertCell(4).innerText = `${b.departureDate} at ${b.departureTime}`;
+      row.insertCell(5).innerText = b.selectedSeat;
+      row.insertCell(6).innerHTML = '<span class="badge-paid">Paid</span>';
+    });
+  }
+
+  // ------------------- Download passenger manifest (names + seats) for the filtered bus -------------------
+  function downloadManifest() {
+    if (currentFilteredBookings.length === 0) {
+      alert('No passengers match the selected route and date. Cannot download empty manifest.');
+      return;
+    }
+    // Prepare CSV content
+    const headers = ['Passenger Name', 'Phone', 'Seat Number', 'Ticket ID', 'Route', 'Departure Date', 'Departure Time'];
+    const rows = currentFilteredBookings.map(b => [
+      b.fullName,
+      b.phone,
+      b.selectedSeat,
+      b.bookingId,
+      `${b.origin} → ${b.destination}`,
+      b.departureDate,
+      b.departureTime
+    ]);
+    const csvLines = [];
+    csvLines.push(headers.map(h => `"${h}"`).join(','));
+    rows.forEach(row => {
+      csvLines.push(row.map(cell => `"${cell}"`).join(','));
+    });
+    const csvContent = csvLines.join('\n');
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    const routeText = document.getElementById('filterRoute').value || 'all_routes';
+    const dateText = document.getElementById('filterDate').value || 'any_date';
+    link.setAttribute('download', `GoFast_manifest_${routeText}_${dateText}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // ------------------- Initial load and event handlers -------------------
+  function refreshAll() {
+    const allPaid = loadPaidBookings();
+    populateRouteFilter(allPaid);
+    applyFilterAndRender();
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+  document.getElementById('applyFilterBtn').addEventListener('click', () => {
+    applyFilterAndRender();
+  });
+  document.getElementById('downloadManifestBtn').addEventListener('click', downloadManifest);
+
+  // Initial run
+  refreshAll();
+
+  // Optional: if admin wants to logout (clear session)
+  // You can add a logout button if needed, but not required.
+</script>
 </body>
 </html>

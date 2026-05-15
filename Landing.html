@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoFast — Tickets at Your Fingertips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap" rel="stylesheet" />
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --black:   #0a0a0b;
+    --ink:     #13131a;
+    --panel:   #1a1a24;
+    --card:    #21212f;
+    --border:  rgba(255,255,255,0.08);
+    --orange:  #ff5c1a;
+    --amber:   #ffb830;
+    --white:   #f5f4f0;
+    --muted:   rgba(245,244,240,0.55);
+    --speed: 0.38s;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 5%;
+    background: rgba(10,10,11,0.7);
+    backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid var(--border);
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 0.55rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; color: #fff; letter-spacing: 0.02em;
+    box-shadow: 0 0 18px rgba(255,92,26,0.45);
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem; letter-spacing: 0.08em; color: var(--white);
+  }
+  .logo-text span { color: var(--orange); }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: var(--muted); font-size: 0.88rem;
+    letter-spacing: 0.04em; font-weight: 500;
+    transition: color var(--speed);
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    display: flex; gap: 0.75rem; align-items: center;
+  }
+  .btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500; font-size: 0.88rem;
+    cursor: pointer; text-decoration: none;
+    transition: all var(--speed);
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    letter-spacing: 0.02em;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-ghost:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+  .btn-primary {
+    background: var(--orange);
+    border: 1px solid var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(255,92,26,0.3);
+  }
+  .btn-primary:hover {
+    background: #ff7040;
+    box-shadow: 0 6px 28px rgba(255,92,26,0.5);
+    transform: translateY(-1px);
+  }
+  .btn-lg {
+    padding: 0.85rem 2rem; font-size: 1rem;
+  }
+  .btn-xl {
+    padding: 1rem 2.5rem; font-size: 1.05rem;
+    border-radius: 8px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding-top: 70px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .hero-bg img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center 30%;
+    filter: brightness(0.3) saturate(1.3);
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, var(--black) 12%, transparent 50%),
+      linear-gradient(to right, rgba(10,10,11,0.7) 30%, transparent 70%),
+      radial-gradient(ellipse at 80% 40%, rgba(255,92,26,0.12) 0%, transparent 60%);
+  }
+
+  .hero-body {
+    position: relative; z-index: 2;
+    display: flex; align-items: center;
+    padding: 0 5%;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+  }
+
+  .hero-content { max-width: 640px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,92,26,0.12);
+    border: 1px solid rgba(255,92,26,0.3);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--amber); font-weight: 600;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--amber); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    animation: fadeUp 0.8s 0.35s ease both;
+  }
+  .hero-title .line-accent { color: var(--orange); display: block; }
+
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1.1rem; color: var(--muted);
+    max-width: 480px; line-height: 1.7;
+    font-weight: 300;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; align-items: center;
+    margin-top: 2.5rem; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.65s ease both;
+  }
+
+  .hero-stats {
+    position: relative; z-index: 2;
+    display: flex; gap: 0;
+    border-top: 1px solid var(--border);
+    background: rgba(10,10,11,0.6);
+    backdrop-filter: blur(16px);
+    animation: fadeUp 0.8s 0.8s ease both;
+  }
+  .stat-item {
+    flex: 1; padding: 1.5rem 2.5rem;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 2.4rem;
+    color: var(--orange); letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 0.78rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    background: var(--orange);
+    padding: 0.7rem 0; overflow: hidden;
+  }
+  .marquee-track {
+    display: flex; white-space: nowrap;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-item {
+    display: inline-flex; align-items: center; gap: 1rem;
+    padding: 0 2rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.95rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(0,0,0,0.75);
+  }
+  .marquee-dot { width: 5px; height: 5px; background: rgba(0,0,0,0.4); border-radius: 50%; }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 6rem 5%; }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.75rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--orange);
+    font-weight: 600; margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: clamp(2.2rem, 4vw, 3.2rem);
+    text-transform: uppercase; line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .section-title em { font-style: normal; color: var(--orange); }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: center; margin-top: 3rem;
+  }
+  .about-text p {
+    color: var(--muted); line-height: 1.8; margin-top: 1rem;
+    font-weight: 300;
+  }
+  .about-text p + p { margin-top: 0.85rem; }
+  .about-text strong { color: var(--white); font-weight: 500; }
+
+  .about-visual {
+    position: relative; border-radius: 16px; overflow: hidden;
+    height: 420px;
+  }
+  .about-visual img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .about-visual:hover img { transform: scale(1.04); }
+  .about-visual::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to top, rgba(10,10,11,0.6) 0%, transparent 50%);
+  }
+  .about-tag {
+    position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 2;
+    background: var(--orange); color: #fff;
+    padding: 0.4rem 1rem; border-radius: 100px;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
+  }
+
+  /* ── VALUE PROPS ── */
+  .vp-section { background: var(--ink); }
+  .vp-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px; margin-top: 3rem;
+    border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden;
+  }
+  .vp-card {
+    background: var(--panel);
+    padding: 2.5rem 2rem;
+    transition: background var(--speed);
+    position: relative; overflow: hidden;
+  }
+  .vp-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 0% 100%, rgba(255,92,26,0.08) 0%, transparent 60%);
+    opacity: 0; transition: opacity var(--speed);
+  }
+  .vp-card:hover { background: var(--card); }
+  .vp-card:hover::before { opacity: 1; }
+
+  .vp-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: rgba(255,92,26,0.1);
+    border: 1px solid rgba(255,92,26,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .vp-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1.35rem;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    margin-bottom: 0.65rem;
+  }
+  .vp-card p {
+    color: var(--muted); font-size: 0.88rem;
+    line-height: 1.7; font-weight: 300;
+  }
+  .vp-num {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3.5rem; font-weight: 900; color: rgba(255,255,255,0.04);
+    line-height: 1;
+  }
+
+  /* ── CITIES ── */
+  .cities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem; margin-top: 3rem;
+  }
+  .city-card {
+    position: relative; border-radius: 12px; overflow: hidden;
+    height: 260px; cursor: pointer;
+    transition: transform var(--speed), box-shadow var(--speed);
+  }
+  .city-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .city-card:first-child {
+    grid-column: span 2; height: 300px;
+  }
+  .city-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(1.1);
+    transition: filter var(--speed), transform 0.5s ease;
+  }
+  .city-card:hover img {
+    filter: brightness(0.7) saturate(1.3);
+    transform: scale(1.06);
+  }
+  .city-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 1.5rem;
+    background: linear-gradient(to top, rgba(10,10,11,0.9) 0%, transparent 100%);
+  }
+  .city-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 1.6rem;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .city-meta {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-top: 0.3rem;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .city-meta .dot { width: 4px; height: 4px; background: var(--orange); border-radius: 50%; }
+
+  /* ── BUSINESS AD ── */
+  .biz-section { background: var(--ink); }
+  .biz-grid {
+    display: grid; grid-template-columns: 1.1fr 1fr;
+    gap: 4rem; align-items: center; margin-top: 3rem;
+  }
+  .biz-content h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(2rem, 3.5vw, 2.8rem);
+    text-transform: uppercase; line-height: 1.05;
+    margin-bottom: 1.2rem;
+  }
+  .biz-content h2 em { font-style: normal; color: var(--orange); }
+  .biz-content p { color: var(--muted); line-height: 1.8; font-weight: 300; }
+
+  .biz-features {
+    list-style: none; margin-top: 1.8rem; display: flex; flex-direction: column; gap: 0.85rem;
+  }
+  .biz-features li {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    color: var(--muted); font-size: 0.9rem;
+  }
+  .biz-features li::before {
+    content: '✓';
+    flex-shrink: 0; width: 22px; height: 22px;
+    background: rgba(255,92,26,0.12);
+    border: 1px solid rgba(255,92,26,0.3);
+    border-radius: 50%; color: var(--orange);
+    font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+    margin-top: 0.1rem;
+  }
+  .biz-features li strong { color: var(--white); font-weight: 500; }
+
+  .biz-cards {
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .biz-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    transition: border-color var(--speed), box-shadow var(--speed);
+  }
+  .biz-card:hover {
+    border-color: rgba(255,92,26,0.3);
+    box-shadow: 0 8px 30px rgba(255,92,26,0.08);
+  }
+  .biz-card-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(255,92,26,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .biz-card-body h4 {
+    font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem;
+  }
+  .biz-card-body p { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+  /* ── TESTIMONIALS ── */
+  .testi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .testi-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 2rem;
+    transition: transform var(--speed);
+  }
+  .testi-card:hover { transform: translateY(-4px); }
+  .testi-stars { color: var(--amber); font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 1rem; }
+  .testi-text {
+    color: var(--muted); font-size: 0.9rem; line-height: 1.75;
+    font-style: italic; font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+  .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--orange); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; color: #fff; flex-shrink: 0;
+  }
+  .testi-name { font-weight: 500; font-size: 0.9rem; }
+  .testi-route { color: var(--muted); font-size: 0.78rem; margin-top: 0.1rem; }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,92,26,0.15) 0%, transparent 60%),
+      var(--black);
+    border-top: 1px solid var(--border);
+    padding: 7rem 5%;
+  }
+  .cta-section h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(3rem, 6vw, 5.5rem);
+    text-transform: uppercase; line-height: 0.95; letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+  }
+  .cta-section h2 em { font-style: normal; color: var(--orange); display: block; }
+  .cta-section p { color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.8; }
+  .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    border-top: 1px solid var(--border);
+    padding: 3rem 5% 2rem;
+  }
+  .footer-grid {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 3rem; padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-brand p { color: var(--muted); font-size: 0.88rem; margin-top: 1rem; line-height: 1.7; font-weight: 300; }
+  .footer-col h5 {
+    font-size: 0.75rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+  .footer-col a {
+    display: block; color: var(--white); text-decoration: none;
+    font-size: 0.88rem; margin-bottom: 0.65rem;
+    transition: color var(--speed);
+  }
+  .footer-col a:hover { color: var(--orange); }
+  .footer-bottom {
+    max-width: 1200px; margin: 2rem auto 0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .footer-bottom span { color: var(--orange); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .about-grid, .biz-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .vp-grid { grid-template-columns: 1fr; }
+    .cities-grid { grid-template-columns: repeat(2, 1fr); }
+    .city-card:first-child { grid-column: span 2; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: column; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-item:last-child { border-bottom: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark">GF</div>
+    <span class="logo-text">Go<span>Fast</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#cities">Destinations</a></li>
+    <li><a href="#why">Why GoFast</a></li>
+    <li><a href="#business">Business</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="gofast-login.html" class="btn btn-ghost">Log In</a>
+    <a href="gofast-login.html" class="btn btn-primary">Get Started →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1800&q=80&auto=format&fit=crop" alt="Modern bus travel" />
+  </div>
+  <div class="hero-body container">
+    <div class="hero-content">
+      <div class="hero-badge">🇨🇲 Cameroon's #1 Bus Network</div>
+      <h1 class="hero-title">
+        Your Journey<br/>
+        Starts With a<br/>
+        <span class="line-accent">Single Tap.</span>
+      </h1>
+      <p class="hero-sub">
+        GoFast connects you to every corner of Cameroon — fast, affordable, and safe. Book a bus ticket in under 60 seconds, right from your phone.
+      </p>
+      <div class="hero-actions">
+        <a href="gofast-login.html" class="btn btn-primary btn-xl">Book a Ticket Now →</a>
+        <a href="#about" class="btn btn-ghost btn-xl">Learn More</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Cities & Towns</div></div>
+    <div class="stat-item"><div class="stat-num">200+</div><div class="stat-label">Daily Departures</div></div>
+    <div class="stat-item"><div class="stat-num">98%</div><div class="stat-label">On-Time Rate</div></div>
+    <div class="stat-item"><div class="stat-num">85k+</div><div class="stat-label">Happy Passengers</div></div>
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <!-- doubled for seamless loop -->
+    <span class="marquee-item">Douala <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Yaoundé <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bafoussam <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bamenda <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Buea <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Limbe <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Kribi <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Ngaoundéré <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Garoua <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Maroua <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Ebolowa <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bertoua <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Douala <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Yaoundé <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bafoussam <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bamenda <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Buea <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Limbe <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Kribi <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Ngaoundéré <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Garoua <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Maroua <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Ebolowa <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bertoua <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p class="section-label">Who We Are</p>
+        <h2 class="section-title">The <em>Smarter</em> Way to Travel Cameroon</h2>
+        <p>GoFast is Cameroon's first fully digital inter-city bus ticketing platform. We've taken the hassle out of travel — no queues, no last-minute scrambles, no overpriced roadside touts.</p>
+        <p>From the bustling streets of <strong>Douala</strong> to the cool highlands of <strong>Bamenda</strong>, GoFast gets you there on time, every time. Our platform partners with the country's most trusted transport agencies to bring you a single, seamless booking experience.</p>
+        <p>Whether you're a student heading home, a businessperson on deadline, or a family on holiday — <strong>GoFast was built for you.</strong></p>
+        <div style="margin-top: 2rem;">
+          <a href="gofast-login.html" class="btn btn-primary btn-lg">Start Booking →</a>
+        </div>
+      </div>
+      <div class="about-visual">
+        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=900&q=80&auto=format&fit=crop" alt="Comfortable bus interior" />
+        <div class="about-tag">✈ Est. 2024 · Cameroon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VALUE PROPS ── -->
+<section id="why" class="vp-section">
+  <div class="container">
+    <p class="section-label reveal">Why Choose GoFast</p>
+    <h2 class="section-title reveal">Built Around <em>Your</em> Comfort</h2>
+    <div class="vp-grid reveal">
+
+      <div class="vp-card">
+        <div class="vp-num">01</div>
+        <div class="vp-icon">⚡</div>
+        <h3>Lightning-Fast Booking</h3>
+        <p>Book a ticket from anywhere in 60 seconds or less. No account? No problem — create one instantly and hit the road.</p>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-num">02</div>
+        <div class="vp-icon">💰</div>
+        <h3>Discounted Fares</h3>
+        <p>GoFast members enjoy exclusive fare discounts, early-bird pricing, and loyalty rewards that grow with every trip you take.</p>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-num">03</div>
+        <div class="vp-icon">🛡️</div>
+        <h3>Safety First</h3>
+        <p>All partner buses are vetted, GPS-tracked, and maintained to the highest standards. Travel with total peace of mind.</p>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-num">04</div>
+        <div class="vp-icon">🪑</div>
+        <h3>Choose Your Seat</h3>
+        <p>Pick the exact seat you want — window, aisle, front row. Your comfort, your choice, confirmed before you even step on board.</p>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-num">05</div>
+        <div class="vp-icon">📱</div>
+        <h3>Mobile Money Payments</h3>
+        <p>Pay instantly with MTN Mobile Money or Orange Money. No cash, no cards, no stress — just tap and you're done.</p>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-num">06</div>
+        <div class="vp-icon">🕐</div>
+        <h3>Real-Time Updates</h3>
+        <p>Get live departure alerts, delay notifications, and boarding reminders straight to your phone. Never miss a bus again.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CITIES ── -->
+<section id="cities">
+  <div class="container">
+    <p class="section-label reveal">Destinations</p>
+    <h2 class="section-title reveal">We Travel <em>Everywhere</em> You Need to Go</h2>
+    <div class="cities-grid reveal">
+
+      <div class="city-card">
+        <img src="Kribi.jpg" alt="Douala city" />
+        <div class="city-info">
+          <div class="city-name">Kribi</div>
+          <div class="city-meta">Economic Capital <span class="dot"></span> 12+ daily routes</div>
+        </div>
+      </div>
+
+      <div class="city-card">
+        <img src="Yaounde.jpg" alt="Yaoundé city" />
+        <div class="city-info">
+          <div class="city-name">Yaoundé</div>
+          <div class="city-meta">Political Capital <span class="dot"></span> 10+ daily routes</div>
+        </div>
+      </div>
+
+      <div class="city-card">
+        <img src="Limbe.jpg" alt="Limbe" />
+        <div class="city-info">
+          <div class="city-name">Limbe</div>
+          <div class="city-meta">Southwest  Region <span class="dot"></span> 6+ daily routes</div>
+        </div>
+        <div class="city-card">
+        <img src="Buea.jpg" alt="Buea" />
+        <div class="city-info">
+          <div class="city-name">Buea</div>
+          <div class="city-meta">Southwest Region <span class="dot"></span> 6+ daily routes</div>
+        </div>
+      </div>
+
+
+      
+
+      
+      
+    </div>
+    <div style="text-align:center; margin-top: 2.5rem;">
+      <a href="gofast-working.html" class="btn btn-ghost btn-lg">View All 50+ Destinations →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── BUSINESS ── -->
+<section id="business" class="biz-section">
+  <div class="container">
+    <div class="biz-grid reveal">
+      <div class="biz-content">
+        <p class="section-label">For Businesses</p>
+        <h2>Travel Smarter,<br/><em>Spend Less.</em></h2>
+        <p>Is your company moving employees across cities regularly? GoFast Business gives you a dedicated corporate account with group booking, priority seating, invoice-based billing, and a dedicated account manager — all in one dashboard.</p>
+        <ul class="biz-features">
+          <li><strong>Group Bookings</strong> — Reserve entire rows or buses for your team instantly.</li>
+          <li><strong>Corporate Billing</strong> — Monthly invoices, zero cash handling, easy accounting.</li>
+          <li><strong>Priority Support</strong> — 24/7 dedicated hotline for business accounts.</li>
+          <li><strong>Analytics Dashboard</strong> — Track travel spend, routes, and frequency at a glance.</li>
+          <li><strong>Exclusive Corporate Rates</strong> — The more you travel, the more you save.</li>
+        </ul>
+        <div style="margin-top: 2rem;">
+          <a href="gofast-login.html" class="btn btn-primary btn-lg">Get a Business Account →</a>
+        </div>
+      </div>
+      <div class="biz-cards">
+        <div class="biz-card">
+          <div class="biz-card-icon"></div>
+          <div class="biz-card-body">
+            <h4>Corporate Accounts</h4>
+            <p>Manage all company travel under a single account. Set budgets, approve trips, and track usage.</p>
+          </div>
+        </div>
+        <div class="biz-card">
+          <div class="biz-card-icon"></div>
+          <div class="biz-card-body">
+            <h4>Travel Analytics</h4>
+            <p>Monthly spending reports, route analysis, and predictive recommendations to cut costs.</p>
+          </div>
+        </div>
+        <div class="biz-card">
+          <div class="biz-card-icon"></div>
+          <div class="biz-card-body">
+            <h4>Agency Partnerships</h4>
+            <p>Are you a transport agency? Partner with GoFast to digitize your operations and reach more customers.</p>
+          </div>
+        </div>
+        <div class="biz-card">
+          <div class="biz-card-icon"></div>
+          <div class="biz-card-body">
+            <h4>Bulk Ticket Packages</h4>
+            <p>Pre-purchase bundles of tickets at discounted rates. Perfect for schools, NGOs, and large enterprises.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section>
+  <div class="container">
+    <p class="section-label reveal">Testimonials</p>
+    <h2 class="section-title reveal">What Our <em>Passengers</em> Say</h2>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"I booked my Douala–Bafoussam ticket while eating breakfast. The bus was on time, the seat I chose was exactly where I expected, and the journey was smooth. GoFast is a game-changer."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Armel K.</div>
+            <div class="testi-route">Douala → Bafoussam</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"As a student, I travel between Buea and Yaoundé constantly. GoFast saves me both time and money with their student discounts. I'll never queue at an agency again."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">PN</div>
+          <div>
+            <div class="testi-name">Patricia N.</div>
+            <div class="testi-route">Buea → Yaoundé</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Our company uses GoFast Business to manage all staff travel. The invoicing system is a dream — our finance team is thrilled. Highly recommend to any SME in Cameroon."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">ET</div>
+          <div>
+            <div class="testi-name">Emmanuel T.</div>
+            <div class="testi-route">Corporate Account · Douala</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="reveal">Ready to<br/><em>GoFast?</em></h2>
+    <p class="reveal">Join 85,000+ Cameroonians who've already made the switch to smarter travel. Your first ticket is just one tap away.</p>
+    <div class="cta-btns reveal">
+      <a href="gofast-login.html" class="btn btn-primary btn-xl">Create Free Account →</a>
+      <a href="gofast-login.html" class="btn btn-ghost btn-xl">Already have an account? Log In</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="margin-bottom:1rem;">
+        <div class="logo-mark">GF</div>
+        <span class="logo-text">Go<span>Fast</span></span>
+      </div>
+      <p>Cameroon's premier digital bus ticketing platform. Safe, fast, and affordable travel at your fingertips.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Platform</h5>
+      <a href="#">Book a Ticket</a>
+      <a href="#">Destinations</a>
+      <a href="#">Bus Schedules</a>
+      <a href="#">Track My Bus</a>
+      <a href="#">Corporate Travel</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About GoFast</a>
+      <a href="#">Partner Agencies</a>
+      <a href="#">Careers</a>
+      <a href="#">Press Kit</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h5>Support</h5>
+      <a href="#">Help Center</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Refund Policy</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 GoFast Technologies Ltd · Cameroon 🇨🇲</div>
+    <div>Made with <span>♥</span> for every Cameroonian traveller</div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        e.target.style.transitionDelay = (i * 0.06) + 's';
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => io.observe(r));
+
+  // Nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 60
+      ? 'rgba(10,10,11,0.95)'
+      : 'rgba(10,10,11,0.7)';
+  });
+</script>
+</body>
+</html>

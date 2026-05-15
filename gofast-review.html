@@ -7,8 +7,163 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<link rel="Stylesheet" href="Styles/Review.css"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  :root {
+    --black:   #0a0a0b;
+    --ink:     #13131a;
+    --panel:   #1a1a24;
+    --card:    #21212f;
+    --border:  rgba(255,255,255,0.08);
+    --orange:  #ff5c1a;
+    --white:   #f5f4f0;
+    --muted:   rgba(245,244,240,0.55);
+    --speed:   0.35s;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 5%;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: #fff;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--orange); }
+  .user-welcome { font-size: 0.85rem; color: var(--muted); }
+  .user-welcome strong { color: var(--orange); }
+
+  .btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--speed);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-primary {
+    background: var(--orange);
+    border: 1px solid var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255,92,26,0.3);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-outline:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 5%;
+  }
+
+  .review-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  h1 em { font-style: normal; color: var(--orange); }
+
+  .info-group {
+    margin: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+  .info-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .info-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  .price-highlight {
+    background: rgba(255,92,26,0.15);
+    border-radius: 16px;
+    padding: 1rem;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+  .price-highlight .amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  @media (max-width: 600px) {
+    .action-buttons { flex-direction: column; gap: 1rem; }
+  }
+</style>
 </head>
 <body>
 
@@ -44,6 +199,129 @@
   © 2025 GoFast Technologies — Your journey, confirmed.
 </footer>
 
-<script src="Scripts/Review.js"></script>
+<script>
+  // ------ User session ------
+  const storedUser = localStorage.getItem('goFastUser');
+  if (!storedUser) window.location.href = 'gofast-login.html';
+  const currentUser = JSON.parse(storedUser);
+  document.getElementById('userWelcome').innerHTML = `👋 Welcome, <strong>${currentUser.name || currentUser.email}</strong>`;
+
+  document.getElementById('logoutBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('goFastUser');
+    // clear pending booking on logout? optional
+    window.location.href = 'gofast-login.html';
+  });
+
+  // ------ Load booking data from pendingBooking ------
+  const pendingDataRaw = localStorage.getItem('pendingBooking');
+  let bookingData = null;
+
+  if (!pendingDataRaw) {
+    // No pending booking – redirect to booking page
+    alert('No booking found. Please start a new booking.');
+    window.location.href = 'gofast-booking.html';
+  } else {
+    try {
+      bookingData = JSON.parse(pendingDataRaw);
+      // Validate mandatory fields
+      if (!bookingData.origin || !bookingData.destination || !bookingData.departureDate || !bookingData.selectedSeat) {
+        throw new Error('Incomplete booking data');
+      }
+      renderReview(bookingData);
+    } catch (e) {
+      alert('Invalid booking data. Please start over.');
+      localStorage.removeItem('pendingBooking');
+      window.location.href = 'gofast-booking.html';
+    }
+  }
+
+  function renderReview(data) {
+    const container = document.getElementById('reviewContent');
+    // Format date nicely
+    const dateObj = new Date(data.departureDate);
+    const formattedDate = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    container.innerHTML = `
+      <div class="info-group">
+        <div class="info-label">Passenger name</div>
+        <div class="info-value">${escapeHtml(data.fullName)}</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">Phone number</div>
+        <div class="info-value">${escapeHtml(data.phone)}</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">Route</div>
+        <div class="info-value">${escapeHtml(data.origin)} → ${escapeHtml(data.destination)}</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">Departure</div>
+        <div class="info-value">${formattedDate} at ${escapeHtml(data.departureTime)}</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">Seat number</div>
+        <div class="info-value">Seat ${data.selectedSeat} (${getSeatPosition(data.selectedSeat)})</div>
+      </div>
+      <div class="price-highlight">
+        <div class="info-label" style="color: var(--muted);">Total amount</div>
+        <div class="amount">${(data.price || 0).toLocaleString()} CFA</div>
+      </div>
+    `;
+  }
+
+  // Helper: seat position based on number (1-16) and bus layout
+  function getSeatPosition(seatNum) {
+    const row = Math.ceil(seatNum / 4);
+    const posInRow = ((seatNum - 1) % 4) + 1;
+    let side = '';
+    if (posInRow === 1 || posInRow === 2) side = 'Left side';
+    else side = 'Right side';
+    return `${side}, Row ${row}`;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // ------ Edit button: go back to booking page with resume flag ------
+  document.getElementById('editBtn').addEventListener('click', () => {
+    // Keep pendingBooking as is, just redirect
+    window.location.href = 'gofast-booking.html?resume=true';
+  });
+
+  // ------ Confirm button: finalize booking, send to admin (simulate), then go to payment ------
+  document.getElementById('confirmBtn').addEventListener('click', () => {
+    if (!bookingData) return;
+    // Generate a unique booking ID
+    const bookingId = 'GF' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    const finalBooking = {
+      ...bookingData,
+      bookingId: bookingId,
+      status: 'pending_payment',
+      bookedAt: new Date().toISOString(),
+      userEmail: currentUser.email
+    };
+    // Store in confirmedBookings array (for admin page)
+    let allBookings = JSON.parse(localStorage.getItem('goFastConfirmedBookings') || '[]');
+    allBookings.push(finalBooking);
+    localStorage.setItem('goFastConfirmedBookings', JSON.stringify(allBookings));
+    
+    // Remove pendingBooking (since it's now confirmed)
+    localStorage.removeItem('pendingBooking');
+    
+    // Store the current booking for payment page
+    localStorage.setItem('currentPaymentBooking', JSON.stringify(finalBooking));
+    
+    // Redirect to payment page
+    window.location.href = 'gofast-payment.html';
+  });
+</script>
 </body>
 </html>

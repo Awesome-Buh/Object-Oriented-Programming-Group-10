@@ -5,9 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GoFast • Admin Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link ref="Stylesheet" href="Styles.Ticket.css"/>
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  :root {
+    --black: #0a0a0b;
+    --panel: #1a1a24;
+    --orange: #ff5c1a;
+    --white: #f5f4f0;
+    --muted: rgba(245,244,240,0.55);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    padding: 2rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--orange);
+  }
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .filter-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .filter-group .field {
+    flex: 1;
+    min-width: 180px;
+  }
+  label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  select, input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    color: white;
+  }
+
+  .btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--orange);
+    color: white;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    background: var(--panel);
+    border-radius: 20px;
+    overflow: hidden;
+    border-collapse: collapse;
+  }
+  th, td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: rgba(255,92,26,0.1);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge {
+    background: #2ecc71;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+  }
+  .stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    flex: 1;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  footer {
+    margin-top: 3rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  @media (max-width: 700px) {
+    table, thead, tbody, th, td, tr { display: block; }
+    th { display: none; }
+    tr { margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem; }
+    td { display: flex; justify-content: space-between; padding: 0.5rem; border: none; }
+    td::before { content: attr(data-label); font-weight: bold; color: var(--muted); }
+  }
 </style>
 </head>
 <body>
@@ -63,6 +204,122 @@
   <footer>Only confirmed (paid) bookings appear here. Use filters to generate boarding manifests.</footer>
 </div>
 
-<script src="Scripts/Ticket.js"></script>
+<script>
+  // Simple admin authentication – you can add a password check if needed
+  // For demo, anyone with the link can see. Add a simple prompt?
+  // Optional: check for admin flag
+  if (!localStorage.getItem('goFastAdminLoggedIn')) {
+    const pwd = prompt("Admin access required. Enter password:");
+    if (pwd === 'admin123') { // simple demo
+      localStorage.setItem('goFastAdminLoggedIn', 'true');
+    } else {
+      alert("Unauthorized access");
+      window.location.href = 'gofast-landing.html';
+    }
+  }
+
+  function loadAllBookings() {
+    return JSON.parse(localStorage.getItem('goFastConfirmedBookings') || '[]').filter(b => b.status === 'paid');
+  }
+
+  function renderStats(bookings) {
+    const total = bookings.length;
+    const revenue = bookings.reduce((sum, b) => sum + (b.price || 0), 0);
+    document.getElementById('totalBookings').innerText = total;
+    document.getElementById('totalRevenue').innerText = revenue.toLocaleString();
+  }
+
+  function populateRouteFilter(bookings) {
+    const routesSet = new Set();
+    bookings.forEach(b => {
+      routesSet.add(`${b.origin} → ${b.destination}`);
+    });
+    const select = document.getElementById('filterRoute');
+    select.innerHTML = '<option value="">All routes</option>';
+    [...routesSet].sort().forEach(route => {
+      const option = document.createElement('option');
+      option.value = route;
+      option.textContent = route;
+      select.appendChild(option);
+    });
+  }
+
+  function applyFilter() {
+    const allBookings = loadAllBookings();
+    const routeFilter = document.getElementById('filterRoute').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    let filtered = allBookings;
+    if (routeFilter) {
+      filtered = filtered.filter(b => `${b.origin} → ${b.destination}` === routeFilter);
+    }
+    if (dateFilter) {
+      filtered = filtered.filter(b => b.departureDate === dateFilter);
+    }
+    renderTable(filtered);
+    renderStats(filtered);
+    return filtered;
+  }
+
+  function renderTable(bookings) {
+    const tbody = document.getElementById('tableBody');
+    if (bookings.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6">No bookings match the filter.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = '';
+    bookings.forEach(b => {
+      const row = tbody.insertRow();
+      row.insertCell(0).innerText = b.bookingId;
+      row.insertCell(1).innerText = b.fullName;
+      row.insertCell(2).innerText = `${b.origin} → ${b.destination}`;
+      row.insertCell(3).innerText = `${b.departureDate} ${b.departureTime}`;
+      row.insertCell(4).innerText = b.selectedSeat;
+      row.insertCell(5).innerHTML = '<span class="badge">Paid</span>';
+      // Add data-label for responsive
+      for (let i = 0; i < row.cells.length; i++) {
+        row.cells[i].setAttribute('data-label', ['Ticket ID','Passenger','Route','Departure','Seat','Status'][i]);
+      }
+    });
+  }
+
+  // Download CSV (passenger manifest for selected filter)
+  function downloadManifest() {
+    const filtered = applyFilter(); // re-apply filter to get current list
+    if (filtered.length === 0) {
+      alert('No passengers to export for this filter.');
+      return;
+    }
+    // Prepare CSV
+    const headers = ['Ticket ID', 'Passenger Name', 'Phone', 'Route', 'Departure Date', 'Departure Time', 'Seat Number', 'Amount (CFA)'];
+    const rows = filtered.map(b => [
+      b.bookingId, b.fullName, b.phone, `${b.origin} → ${b.destination}`,
+      b.departureDate, b.departureTime, b.selectedSeat, b.price
+    ]);
+    const csvContent = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `goFast_manifest_${new Date().toISOString().slice(0,19)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // Initial load
+  let allPaid = loadAllBookings();
+  renderStats(allPaid);
+  populateRouteFilter(allPaid);
+  renderTable(allPaid);
+
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    allPaid = loadAllBookings();
+    populateRouteFilter(allPaid);
+    applyFilter();
+  });
+  document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+  document.getElementById('downloadManifestBtn').addEventListener('click', downloadManifest);
+</script>
 </body>
 </html>

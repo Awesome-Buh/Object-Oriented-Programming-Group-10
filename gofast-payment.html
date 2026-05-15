@@ -7,8 +7,244 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<link rel="Stylesheet" href="Styles/Payment.css"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  :root {
+    --black:   #0a0a0b;
+    --ink:     #13131a;
+    --panel:   #1a1a24;
+    --card:    #21212f;
+    --border:  rgba(255,255,255,0.08);
+    --orange:  #ff5c1a;
+    --mtn:     #ffcc00;
+    --orange-money: #ff5a00;
+    --white:   #f5f4f0;
+    --muted:   rgba(245,244,240,0.55);
+    --speed:   0.35s;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 5%;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: #fff;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--orange); }
+  .user-welcome { font-size: 0.85rem; color: var(--muted); }
+  .user-welcome strong { color: var(--orange); }
+
+  .btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--speed);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-primary {
+    background: var(--orange);
+    border: 1px solid var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255,92,26,0.3);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-outline:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 5%;
+  }
+
+  .payment-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  h1 em { font-style: normal; color: var(--orange); }
+
+  .summary-box {
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border);
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+  }
+  .summary-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .summary-value {
+    font-weight: 600;
+  }
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+  }
+
+  .payment-methods {
+    margin: 1.5rem 0;
+  }
+  .method-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .method-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all var(--speed);
+  }
+  .method-option:hover {
+    border-color: var(--orange);
+    background: rgba(255,92,26,0.1);
+  }
+  .method-option.selected {
+    border-color: var(--orange);
+    background: rgba(255,92,26,0.15);
+    box-shadow: 0 0 0 1px var(--orange);
+  }
+  .method-icon {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  .mtn-icon {
+    background: #ffcc00;
+    color: #000;
+  }
+  .orange-icon {
+    background: #ff5a00;
+    color: white;
+  }
+  .method-name {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .method-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .phone-input {
+    margin-top: 1rem;
+    display: none;
+  }
+  .phone-input.active {
+    display: block;
+  }
+  .phone-input input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.8rem;
+    color: white;
+    margin-top: 0.5rem;
+  }
+
+  .total-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 600px) {
+    .action-buttons { flex-direction: column; }
+  }
+</style>
 </head>
 <body>
 
@@ -69,6 +305,169 @@
   © 2025 GoFast Technologies — Secure payment powered by mobile money.
 </footer>
 
-<script src="Scripts/Payment.js"></script>
+<script>
+  // User session
+  const storedUser = localStorage.getItem('goFastUser');
+  if (!storedUser) window.location.href = 'gofast-login.html';
+  const currentUser = JSON.parse(storedUser);
+  document.getElementById('userWelcome').innerHTML = `👋 Welcome, <strong>${currentUser.name || currentUser.email}</strong>`;
+
+  document.getElementById('logoutBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('goFastUser');
+    window.location.href = 'gofast-login.html';
+  });
+
+  // Load booking from currentPaymentBooking (set by review page)
+  let booking = null;
+  const paymentBookingRaw = localStorage.getItem('currentPaymentBooking');
+  if (!paymentBookingRaw) {
+    alert('No booking payment found. Please start a new booking.');
+    window.location.href = 'gofast-booking.html';
+  } else {
+    try {
+      booking = JSON.parse(paymentBookingRaw);
+      renderSummary(booking);
+    } catch(e) {
+      alert('Invalid booking data.');
+     window.location.href = 'gofast-ticket.html?bookingId=' + booking.bookingId;;
+    }
+  }
+
+  function renderSummary(booking) {
+    const container = document.getElementById('summaryContent');
+    const formattedDate = new Date(booking.departureDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    container.innerHTML = `
+      <div class="summary-box">
+        <div class="summary-row">
+          <span class="summary-label">Passenger</span>
+          <span class="summary-value">${escapeHtml(booking.fullName)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Route</span>
+          <span class="summary-value">${escapeHtml(booking.origin)} → ${escapeHtml(booking.destination)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Departure</span>
+          <span class="summary-value">${formattedDate} at ${escapeHtml(booking.departureTime)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Seat</span>
+          <span class="summary-value">${booking.selectedSeat}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="summary-row">
+          <span class="summary-label">Total to pay</span>
+          <span class="total-price">${(booking.price || 0).toLocaleString()} CFA</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Payment method selection
+  let selectedMethod = null;
+  const mtnOption = document.getElementById('methodMtn');
+  const orangeOption = document.getElementById('methodOrange');
+  const mtnPhoneDiv = document.getElementById('mtnPhone');
+  const orangePhoneDiv = document.getElementById('orangePhone');
+
+  function clearSelection() {
+    mtnOption.classList.remove('selected');
+    orangeOption.classList.remove('selected');
+    mtnPhoneDiv.classList.remove('active');
+    orangePhoneDiv.classList.remove('active');
+  }
+
+  mtnOption.addEventListener('click', () => {
+    clearSelection();
+    selectedMethod = 'mtn';
+    mtnOption.classList.add('selected');
+    mtnPhoneDiv.classList.add('active');
+  });
+
+  orangeOption.addEventListener('click', () => {
+    clearSelection();
+    selectedMethod = 'orange';
+    orangeOption.classList.add('selected');
+    orangePhoneDiv.classList.add('active');
+  });
+
+  // Cancel button - go back to working page or booking?
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to cancel this payment? Your booking will still be saved as draft.')) {
+      window.location.href = 'gofast-working.html';
+    }
+  });
+
+  // Pay button
+  document.getElementById('payBtn').addEventListener('click', () => {
+    if (!selectedMethod) {
+      alert('Please select a payment method (MTN Mobile Money or Orange Money).');
+      return;
+    }
+    let phoneNumber = '';
+    if (selectedMethod === 'mtn') {
+      phoneNumber = document.getElementById('mtnNumber').value.trim();
+      if (!phoneNumber) {
+        alert('Please enter your MTN Mobile Money number.');
+        return;
+      }
+      if (!/^[6]{1}[0-9]{8}$/.test(phoneNumber) && !/^[65]{1}[0-9]{8}$/.test(phoneNumber)) {
+        alert('Please enter a valid MTN number (e.g., 6XXXXXXXX).');
+        return;
+      }
+    } else if (selectedMethod === 'orange') {
+      phoneNumber = document.getElementById('orangeNumber').value.trim();
+      if (!phoneNumber) {
+        alert('Please enter your Orange Money number.');
+        return;
+      }
+      if (!/^[6]{1}[0-9]{8}$/.test(phoneNumber) && !/^[65]{1}[0-9]{8}$/.test(phoneNumber)) {
+        alert('Please enter a valid Orange number (e.g., 6XXXXXXXX).');
+        return;
+      }
+    }
+
+    // Simulate payment processing
+    const payBtn = document.getElementById('payBtn');
+    payBtn.disabled = true;
+    payBtn.textContent = 'Processing...';
+    
+    setTimeout(() => {
+      // Mark booking as paid
+      booking.status = 'paid';
+      booking.paymentMethod = selectedMethod === 'mtn' ? 'MTN Mobile Money' : 'Orange Money';
+      booking.paymentPhone = phoneNumber;
+      booking.paidAt = new Date().toISOString();
+      
+      // Update confirmed bookings array
+      let allBookings = JSON.parse(localStorage.getItem('goFastConfirmedBookings') || '[]');
+      const existingIndex = allBookings.findIndex(b => b.bookingId === booking.bookingId);
+      if (existingIndex !== -1) {
+        allBookings[existingIndex] = booking;
+      } else {
+        allBookings.push(booking);
+      }
+      localStorage.setItem('goFastConfirmedBookings', JSON.stringify(allBookings));
+      
+      // Clear temporary payment booking
+      localStorage.removeItem('currentPaymentBooking');
+      localStorage.removeItem('pendingBooking');
+      
+      alert(`✅ Payment successful! Your ticket (ID: ${booking.bookingId}) has been confirmed. A receipt has been sent to ${phoneNumber}.`);
+      window.location.href = 'gofast-working.html';
+    }, 1500);
+  });
+</script>
 </body>
 </html>
