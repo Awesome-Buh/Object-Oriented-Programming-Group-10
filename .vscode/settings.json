@@ -1,4 +1,10 @@
 {
     "git.ignoreLimitWarning": true,
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "java.import.maven.enabled": true,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.project.sourcePaths": [
+        "gofast-backend/src/main/java",
+        "gofast-backend/src/test/java"
+    ]
 }

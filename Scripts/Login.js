@@ -79,6 +79,16 @@ async function handleAuth() {
 function toggleMode() { isLoginMode = !isLoginMode; updateUIMode(); errorBox.style.display = 'none'; passwordInput.value = ''; }
 actionBtn.addEventListener('click', handleAuth);
 toggleLink.addEventListener('click', toggleMode);
+
+// Trigger handleAuth on Enter key press
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        // Prevent default form submission if any inputs are focused
+        event.preventDefault();
+        handleAuth();
+    }
+});
+
 updateUIMode();
 
 async function handleSignup(formData) {
