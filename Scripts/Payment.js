@@ -137,3 +137,42 @@
       window.location.href = 'gofast-working.html';
     }, 1500);
   });
+
+  async function submitPayment(event) {
+  event.preventDefault();
+  
+  // Get booking ID from URL or localStorage from the previous step
+  const bookingId = localStorage.getItem("currentBookingId");
+  
+  const paymentData = {
+      bookingId: bookingId,
+      cardNumber: document.getElementById('cardNumber').value,
+      cardHolderName: document.getElementById('cardName').value,
+      expiryDate: document.getElementById('expiryDate').value,
+      cvv: document.getElementById('cvv').value
+  };
+  
+  try {
+      const response = await fetch('http://localhost:5500/api/payments/process', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify(paymentData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+          alert("Payment Successful! Ref: " + result.transactionReference);
+          // Redirect to a success/ticket page
+          window.location.href = "ticket.html";
+      } else {
+          alert("Payment Failed: " + result.message);
+      }
+  } catch (error) {
+      console.error("Network error during payment processing");
+      alert("An error occurred while processing your payment. Please try again later.");
+  }
+}
