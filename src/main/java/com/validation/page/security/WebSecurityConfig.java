@@ -1,0 +1,5 @@
+package com.validation.page.security;
+
+public class WebSecurityConfig {
+
+}
