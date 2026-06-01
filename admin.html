@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoFast • Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Chart.js for simple charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0b;
+    --panel: #1a1a24;
+    --orange: #ff5c1a;
+    --white: #f5f4f0;
+    --muted: rgba(245,244,240,0.55);
+    --border: rgba(255,255,255,0.08);
+    --success: #2ecc71;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    padding: 1.5rem;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  h1 { font-size: 2rem; color: var(--orange); }
+  .logout-btn {
+    background: rgba(231,76,60,0.2);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+  }
+  .logout-btn:hover { background: var(--danger); color: white; }
+
+  /* Stats Cards */
+  .stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    flex: 1;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+
+  /* Two-column layout for management sections */
+  .two-columns {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .management-card {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.25rem;
+  }
+  .management-card h3 {
+    margin-bottom: 1rem;
+    color: var(--orange);
+    font-size: 1.1rem;
+  }
+  .driver-select {
+    width: 100%;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: white;
+  }
+  .assign-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    background: var(--orange);
+    border: none;
+    padding: 0.6rem;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+  }
+  .bus-table {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+  .bus-table td, .bus-table th {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Filter Card */
+  .filter-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .filter-group .field { flex: 1; min-width: 160px; }
+  label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  select, input {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    color: white;
+    font-family: inherit;
+  }
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: var(--orange);
+    color: white;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--orange);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    background: var(--panel);
+    border-radius: 20px;
+    overflow: hidden;
+    border-collapse: collapse;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: rgba(255,92,26,0.1);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+  .badge-paid {
+    background: var(--success);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+  }
+  .chart-container {
+    background: var(--panel);
+    border-radius: 20px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+  }
+  canvas { max-height: 250px; width: 100%; }
+  footer {
+    margin-top: 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.7rem;
+  }
+  @media (max-width: 900px) {
+    body { padding: 1rem; }
+    .two-columns { flex-direction: column; }
+    .filter-group { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header with Logout Button -->
+  <div class="admin-header">
+    <div>
+      <h1>🚌 GoFast Admin Console</h1>
+      <p>Manage bookings, assign drivers, and track revenue</p>
+    </div>
+    <button id="logoutBtn" class="btn logout-btn">🚪 Logout</button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats">
+    <div class="stat-card"><div class="stat-number" id="totalBookings">0</div><div>Paid Tickets</div></div>
+    <div class="stat-card"><div class="stat-number" id="totalRevenue">0</div><div>Revenue (CFA)</div></div>
+    <div class="stat-card"><div class="stat-number" id="uniqueRoutes">0</div><div>Active Routes</div></div>
+    <div class="stat-card"><div class="stat-number" id="uniquePassengers">0</div><div>Unique Passengers</div></div>
+  </div>
+
+  <!-- Simple Bar Chart (Daily Revenue) -->
+  <div class="chart-container">
+    <h3 style="margin-bottom: 1rem;">📊 Last 7 Days Revenue</h3>
+    <canvas id="revenueChart" width="400" height="200"></canvas>
+  </div>
+
+  <!-- Two-column: Driver Assignment + Bus Management -->
+  <div class="two-columns">
+    <!-- Driver Assignment Card (matches your use case diagram) -->
+    <div class="management-card">
+      <h3>👨‍✈️ Assign Driver to Bus</h3>
+      <label>Select Bus</label>
+      <select id="assignBusSelect" class="driver-select">
+        <option value="">-- Select Bus --</option>
+      </select>
+      <label>Select Driver</label>
+      <select id="assignDriverSelect" class="driver-select">
+        <option value="John Kamga">John Kamga</option>
+        <option value="Marie Ngo">Marie Ngo</option>
+        <option value="Paul Ebogo">Paul Ebogo</option>
+        <option value="Claire Mbarga">Claire Mbarga</option>
+      </select>
+      <button id="assignDriverBtn" class="assign-btn">✓ Assign Driver</button>
+      <div id="assignmentResult" style="margin-top: 0.8rem; font-size: 0.75rem; color: var(--muted);"></div>
+    </div>
+
+    <!-- Bus Management Table -->
+    <div class="management-card">
+      <h3>🚍 Bus Fleet Status</h3>
+      <table class="bus-table">
+        <thead><tr><th>Bus Name</th><th>License</th><th>Capacity</th><th>Status</th></tr></thead>
+        <tbody id="busTableBody">
+          <tr><td colspan="4">Loading buses...</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 1rem;">
+        <input type="text" id="newBusName" placeholder="New bus name" style="width: calc(50% - 0.5rem); margin-right: 0.5rem;">
+        <input type="number" id="newBusCapacity" placeholder="Capacity" style="width: calc(30% - 0.5rem);">
+        <button id="addBusBtn" class="btn" style="margin-top: 0.5rem; width: 100%;">+ Add Bus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-card">
+    <h3 style="margin-bottom: 1rem;">📋 Boarding Manifest Filter</h3>
+    <div class="filter-group">
+      <div class="field"><label>Route</label><select id="filterRoute"><option value="">All routes</option></select></div>
+      <div class="field"><label>Departure Date</label><input type="date" id="filterDate"></div>
+      <div class="field"><button id="applyFilterBtn" class="btn">Apply Filter</button></div>
+      <div class="field"><button id="downloadManifestBtn" class="btn btn-outline">📎 Download CSV</button></div>
+    </div>
+  </div>
+
+  <!-- Bookings Table -->
+  <div style="overflow-x: auto;">
+    <table>
+      <thead><tr><th>Ticket ID</th><th>Passenger</th><th>Phone</th><th>Route</th><th>Departure</th><th>Seat</th><th>Status</th></tr></thead>
+      <tbody id="tableBody"><tr><td colspan="7">Loading bookings...</td></tr></tbody>
+    </table>
+  </div>
+  <footer>GoFast Admin — Only confirmed (paid) bookings. Driver assignment logged for audit.</footer>
+</div>
+
+<script>
+  // ==================== SAMPLE DATA (Replace with API calls later) ====================
+  // This matches your backend structure from the doc
+
+  let sampleBookings = [
+    { bookingId: "GF001", fullName: "John Doe", phone: "677123456", origin: "Douala", destination: "Yaoundé", departureDate: "2026-06-15", departureTime: "08:00", selectedSeat: "A1", price: 4500, status: "paid" },
+    { bookingId: "GF002", fullName: "Jane Smith", phone: "677234567", origin: "Douala", destination: "Bafoussam", departureDate: "2026-06-15", departureTime: "14:00", selectedSeat: "B3", price: 5500, status: "paid" },
+    { bookingId: "GF003", fullName: "Paul Biya", phone: "677345678", origin: "Yaoundé", destination: "Garoua", departureDate: "2026-06-16", departureTime: "22:00", selectedSeat: "C2", price: 7500, status: "paid" },
+    { bookingId: "GF004", fullName: "Marie Claire", phone: "677456789", origin: "Douala", destination: "Yaoundé", departureDate: "2026-06-16", departureTime: "08:00", selectedSeat: "A4", price: 4500, status: "paid" },
+    { bookingId: "GF005", fullName: "François Ngosso", phone: "677567890", origin: "Douala", destination: "Yaoundé", departureDate: "2026-06-17", departureTime: "08:00", selectedSeat: "B2", price: 4500, status: "paid" }
+  ];
+
+  let sampleBuses = [
+    { name: "Express 101", licensePlate: "LT 001 AB", capacity: 16, status: "active" },
+    { name: "City Shuttle", licensePlate: "LT 002 CD", capacity: 32, status: "active" },
+    { name: "Night Rider", licensePlate: "LT 003 EF", capacity: 24, status: "maintenance" }
+  ];
+
+  // Store assignments (simulates audit log from your backend doc)
+  let driverAssignments = JSON.parse(localStorage.getItem('driverAssignments') || '[]');
+
+  // ==================== Helper Functions ====================
+  function loadPaidBookings() { return sampleBookings.filter(b => b.status === 'paid'); }
+
+  function renderStats(bookings) {
+    document.getElementById('totalBookings').innerText = bookings.length;
+    document.getElementById('totalRevenue').innerText = bookings.reduce((s,b)=>s+(b.price||0),0).toLocaleString();
+    document.getElementById('uniqueRoutes').innerText = new Set(bookings.map(b=>`${b.origin}→${b.destination}`)).size;
+    document.getElementById('uniquePassengers').innerText = new Set(bookings.map(b=>b.fullName)).size;
+  }
+
+  function populateRouteFilter(bookings) {
+    const routes = [...new Set(bookings.map(b=>`${b.origin} → ${b.destination}`))];
+    const select = document.getElementById('filterRoute');
+    select.innerHTML = '<option value="">All routes</option>';
+    routes.sort().forEach(r => { let opt = document.createElement('option'); opt.value = r; opt.textContent = r; select.appendChild(opt); });
+  }
+
+  // Render bus management table
+  function renderBusTable() {
+    const tbody = document.getElementById('busTableBody');
+    if (!sampleBuses.length) { tbody.innerHTML = '<tr><td colspan="4">No buses</td></tr>'; return; }
+    tbody.innerHTML = '';
+    sampleBuses.forEach(bus => {
+      let row = tbody.insertRow();
+      row.insertCell(0).innerText = bus.name;
+      row.insertCell(1).innerText = bus.licensePlate;
+      row.insertCell(2).innerText = bus.capacity;
+      row.insertCell(3).innerHTML = `<span style="color: ${bus.status === 'active' ? '#2ecc71' : '#e74c3c'}">${bus.status}</span>`;
+    });
+    // Populate bus dropdown for assignment
+    const busSelect = document.getElementById('assignBusSelect');
+    busSelect.innerHTML = '<option value="">-- Select Bus --</option>';
+    sampleBuses.forEach(bus => { let opt = document.createElement('option'); opt.value = bus.name; opt.textContent = `${bus.name} (${bus.licensePlate})`; busSelect.appendChild(opt); });
+  }
+
+  // Add bus (simulates POST /api/admin/buses)
+  function addBus(name, capacity) {
+    if (!name || capacity < 4) { alert("Bus name required, capacity min 4"); return false; }
+    let newBus = { name: name, licensePlate: `LT ${Math.floor(Math.random()*900)+100} XX`, capacity: capacity, status: "active" };
+    sampleBuses.push(newBus);
+    renderBusTable();
+    alert(`Bus "${name}" added successfully!`);
+    return true;
+  }
+
+  // Assign driver (simulates use case from your diagram)
+  function assignDriver(busName, driverName) {
+    if (!busName) { alert("Please select a bus"); return false; }
+    driverAssignments.push({ bus: busName, driver: driverName, assignedAt: new Date().toISOString() });
+    localStorage.setItem('driverAssignments', JSON.stringify(driverAssignments));
+    document.getElementById('assignmentResult').innerHTML = `✅ Assigned ${driverName} to ${busName} at ${new Date().toLocaleTimeString()}`;
+    setTimeout(() => { document.getElementById('assignmentResult').innerHTML = ''; }, 3000);
+    return true;
+  }
+
+  // Chart rendering
+  let revenueChart;
+  function renderChart(bookings) {
+    const last7Days = [...Array(7).keys()].map(i => { let d = new Date(); d.setDate(d.getDate() - i); return d.toISOString().split('T')[0]; }).reverse();
+    const dailyRevenue = last7Days.map(date => bookings.filter(b => b.departureDate === date).reduce((s,b)=>s+(b.price||0),0));
+    if (revenueChart) revenueChart.destroy();
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    revenueChart = new Chart(ctx, {
+      type: 'bar', data: { labels: last7Days.map(d => d.slice(5)), datasets: [{ label: 'Revenue (CFA)', data: dailyRevenue, backgroundColor: '#ff5c1a', borderRadius: 8 }] },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#f5f4f0' } } } }
+    });
+  }
+
+  // Filter and render table
+  let currentFiltered = [];
+  function applyFilterAndRender() {
+    const all = loadPaidBookings();
+    const routeFilter = document.getElementById('filterRoute').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    let filtered = all;
+    if (routeFilter) filtered = filtered.filter(b => `${b.origin} → ${b.destination}` === routeFilter);
+    if (dateFilter) filtered = filtered.filter(b => b.departureDate === dateFilter);
+    currentFiltered = filtered;
+    const tbody = document.getElementById('tableBody');
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7">No bookings match filter</td></tr>'; renderStats(all); renderChart(all); return; }
+    tbody.innerHTML = '';
+    filtered.forEach(b => {
+      let row = tbody.insertRow();
+      row.insertCell(0).innerText = b.bookingId;
+      row.insertCell(1).innerText = b.fullName;
+      row.insertCell(2).innerText = b.phone;
+      row.insertCell(3).innerText = `${b.origin} → ${b.destination}`;
+      row.insertCell(4).innerText = `${b.departureDate} ${b.departureTime}`;
+      row.insertCell(5).innerText = b.selectedSeat;
+      row.insertCell(6).innerHTML = '<span class="badge-paid">Paid</span>';
+    });
+    renderStats(all);
+    renderChart(all);
+  }
+
+  function downloadManifest() {
+    if (!currentFiltered.length) { alert("No passengers to export"); return; }
+    const headers = ['Passenger','Phone','Seat','Ticket ID','Route','Date','Time'];
+    const rows = currentFiltered.map(b => [b.fullName, b.phone, b.selectedSeat, b.bookingId, `${b.origin}→${b.destination}`, b.departureDate, b.departureTime]);
+    let csv = [headers.map(h=>`"${h}"`).join(',')];
+    rows.forEach(r => csv.push(r.map(c=>`"${c}"`).join(',')));
+    const blob = new Blob(["\uFEFF" + csv.join('\n')], {type: 'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `GoFast_manifest_${document.getElementById('filterRoute').value || 'all'}.csv`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function refreshAll() {
+    const all = loadPaidBookings();
+    populateRouteFilter(all);
+    applyFilterAndRender();
+    renderBusTable();
+  }
+
+  // Logout
+  function logout() {
+    localStorage.removeItem('goFastAdminLoggedIn');
+    window.location.href = 'gofast-landing.html';
+  }
+
+  // ==================== Event Listeners ====================
+  document.getElementById('refreshBtn')?.addEventListener('click', refreshAll);
+  document.getElementById('applyFilterBtn')?.addEventListener('click', applyFilterAndRender);
+  document.getElementById('downloadManifestBtn')?.addEventListener('click', downloadManifest);
+  document.getElementById('logoutBtn')?.addEventListener('click', logout);
+  document.getElementById('addBusBtn')?.addEventListener('click', () => {
+    let name = document.getElementById('newBusName').value;
+    let cap = parseInt(document.getElementById('newBusCapacity').value);
+    addBus(name, cap);
+    document.getElementById('newBusName').value = '';
+    document.getElementById('newBusCapacity').value = '';
+  });
+  document.getElementById('assignDriverBtn')?.addEventListener('click', () => {
+    let bus = document.getElementById('assignBusSelect').value;
+    let driver = document.getElementById('assignDriverSelect').value;
+    assignDriver(bus, driver);
+  });
+
+  // ==================== Admin Auth Check ====================
+  if (!localStorage.getItem('goFastAdminLoggedIn')) {
+    let pwd = prompt("🔐 Admin access required:");
+    if (pwd === 'admin123') localStorage.setItem('goFastAdminLoggedIn', 'true');
+    else { alert("Unauthorized"); window.location.href = 'gofast-landing.html'; }
+  }
+  refreshAll();
+</script>
+</body>
+</html>
