@@ -38,17 +38,20 @@ public class User {
     @Column(name = "refresh_token_expiry")
     private LocalDateTime refreshTokenExpiry;
     
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-    
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
-    
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
     
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+        @Column(name = "is_active", nullable = false)
+        @Builder.Default
+        private Boolean isActive = true;
     
     @PreUpdate
     protected void onUpdate() {

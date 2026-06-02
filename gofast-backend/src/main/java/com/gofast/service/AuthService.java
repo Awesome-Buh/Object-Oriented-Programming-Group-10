@@ -63,8 +63,8 @@ public class AuthService {
             String accessToken = jwtTokenProvider.generateAccessToken(savedUser.getId(), savedUser.getEmail());
             String refreshToken = jwtTokenProvider.generateRefreshToken(savedUser.getId(), savedUser.getEmail());
             
-            // Store refresh token hash
-            String refreshTokenHash = passwordEncoderService.encodePassword(refreshToken);
+            // Store refresh token hash (use SHA-256 to avoid bcrypt length limits)
+            String refreshTokenHash = passwordEncoderService.hashToken(refreshToken);
             savedUser.setRefreshTokenHash(refreshTokenHash);
             savedUser.setRefreshTokenExpiry(LocalDateTime.now().plusDays(30));
             userRepository.save(savedUser);
@@ -140,7 +140,7 @@ public class AuthService {
             
             // Update user
             user.setLastLogin(LocalDateTime.now());
-            String refreshTokenHash = passwordEncoderService.encodePassword(refreshToken);
+            String refreshTokenHash = passwordEncoderService.hashToken(refreshToken);
             user.setRefreshTokenHash(refreshTokenHash);
             user.setRefreshTokenExpiry(LocalDateTime.now().plusDays(30));
             userRepository.save(user);
@@ -249,7 +249,7 @@ public class AuthService {
             
             // Verify refresh token hash
             if (user.getRefreshTokenHash() == null || 
-                !passwordEncoderService.matches(refreshToken, user.getRefreshTokenHash())) {
+                !passwordEncoderService.matchesToken(refreshToken, user.getRefreshTokenHash())) {
                 log.warn("Token refresh failed: Refresh token hash mismatch for user: {}", userId);
                 return TokenRefreshResponse.builder()
                         .success(false)

@@ -139,40 +139,56 @@
   });
 
   async function submitPayment(event) {
-  event.preventDefault();
-  
-  // Get booking ID from URL or localStorage from the previous step
-  const bookingId = localStorage.getItem("currentBookingId");
-  
-  const paymentData = {
+    event.preventDefault();
+
+    // Get booking ID from localStorage (set during booking step)
+    const bookingId = localStorage.getItem('currentBookingId');
+    if (!bookingId) {
+      alert('No booking found. Please start a new booking.');
+      return;
+    }
+
+    // Ensure user selected a mobile money method
+    if (!selectedMethod) {
+      alert('Please select a payment method (MTN or Orange)');
+      return;
+    }
+
+    let phoneNumber = '';
+    if (selectedMethod === 'mtn') phoneNumber = document.getElementById('mtnNumber').value.trim();
+    else if (selectedMethod === 'orange') phoneNumber = document.getElementById('orangeNumber').value.trim();
+
+    if (!phoneNumber) {
+      alert('Please enter your phone number for the selected payment method.');
+      return;
+    }
+
+    const paymentData = {
       bookingId: bookingId,
-      cardNumber: document.getElementById('cardNumber').value,
-      cardHolderName: document.getElementById('cardName').value,
-      expiryDate: document.getElementById('expiryDate').value,
-      cvv: document.getElementById('cvv').value
-  };
-  
-  try {
-      const response = await fetch('http://localhost:5500/api/payments/process', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-          },
-          body: JSON.stringify(paymentData)
+      paymentMethod: selectedMethod,
+      phoneNumber: phoneNumber
+    };
+
+    try {
+      const response = await fetch('http://localhost:5500/api/payments/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        body: JSON.stringify(paymentData)
       });
-      
+
       const result = await response.json();
-      
-      if (result.success) {
-          alert("Payment Successful! Ref: " + result.transactionReference);
-          // Redirect to a success/ticket page
-          window.location.href = "ticket.html";
+
+      if (response.ok && result.success) {
+        alert('Payment initiated. Reference: ' + result.transactionId);
+        window.location.href = 'gofast-ticket.html';
       } else {
-          alert("Payment Failed: " + result.message);
+        alert('Payment failed: ' + (result.message || JSON.stringify(result)));
       }
-  } catch (error) {
-      console.error("Network error during payment processing");
-      alert("An error occurred while processing your payment. Please try again later.");
+    } catch (error) {
+      console.error('Network error during payment processing', error);
+      alert('An error occurred while processing your payment. Please try again later.');
+    }
   }
-}

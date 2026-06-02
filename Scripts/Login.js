@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5500/api/api';
+const API_BASE_URL = 'http://localhost:5500/api';
 
 const signupNameGroup = document.getElementById('signupNameGroup');
 const fullNameInput = document.getElementById('fullName');
@@ -45,7 +45,7 @@ async function handleAuth() {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 // ADMIN REDIRECT
-                if (email.toLowerCase() === 'admin2@gmail.com') window.location.href = 'gofast-admin.html';
+                if (email.toLowerCase() === 'admin2@gmail.com') window.location.href = 'admin.html';
                 else window.location.href = 'gofast-working.html';
             } else {
                 showError(data.message || 'Invalid credentials.');
@@ -65,7 +65,7 @@ async function handleAuth() {
                 localStorage.setItem('accessToken', data.token);
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                if (email.toLowerCase() === 'admin2@gmail.com') window.location.href = 'gofast-admin.html';
+                if (email.toLowerCase() === 'admin2@gmail.com') window.location.href = 'admin.html';
                 else window.location.href = 'gofast-working.html';
             } else {
                 showError(data.message || 'Signup failed.');
